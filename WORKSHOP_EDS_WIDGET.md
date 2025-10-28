@@ -18,167 +18,58 @@ You'll create a "Team Dashboard" action that displays team information in a beau
    - Go to https://www.aem.live/developer/tutorial
    - This will guide you through the complete EDS setup
 
-2. **Option A: Using GitHub (Recommended)**
-   - Click "Get Started" on the AEM Live developer tutorial
-   - Sign in with your GitHub account
-   - Click the "Use this template" button on the boilerplate repository
-   - Name your repository (e.g., `my-mcp-widgets`)
-   - Install the AEM Code Sync GitHub App to enable automatic synchronization
-
-3. **Option B: Using SharePoint**
-   - Follow the SharePoint setup instructions in the tutorial
-   - Create a new SharePoint folder for your project
-   - Connect it to your AEM project
-
-4. **Verify Your Setup**
+2. **Verify Your Setup**
    - You should now have:
      - A GitHub repository with the EDS boilerplate code
-     - A preview URL (e.g., `https://main--my-mcp-widgets--yourusername.aem.live`)
+     - A preview URL (e.g., `https://main--my-aem-widgets--yourusername.aem.live`)
      - A local development environment (optional but recommended)
 
 ### Step 1.2: Test Your EDS Environment
 
 1. **Access Your Live Site**
    ```
-   https://main--my-mcp-widgets--yourusername.aem.live
+   https://main--my-aem-widgets--yourusername.aem.live
    ```
 
-2. **Make a Test Edit**
-   - Edit the `index.md` file in your repository or SharePoint
-   - Add some test content:
-     ```markdown
-     # My MCP Widgets Test
-     
-     This is a test page to verify my EDS setup is working.
-     ```
-
-3. **Preview the Changes**
+2. **Preview the Changes**
    - Wait a few seconds for the build to complete
    - Refresh your preview URL
    - You should see your changes reflected
 
 ---
 
-## Part 2: AEM Embed Setup
+## Part 2: Setup CORS
+Navigate to https://labs.aem.live/tools/headers-edit/index.html. Make sure you are signed in.
+Select your organization and repo.
+Click `Fetch`.
+Add the following header:
+```access-control-allow-origin: *```
+Click Save.
+
+## Part 3: AEM Embed Setup
 
 AEM Embed allows you to display EDS content inside non-EDS environments (like widgets).
 
 ### Step 2.1: Add the AEM Embed Script
 
-1. **Create the `aem-embed.js` File**
-   
-   In your EDS project, create a new file at `scripts/aem-embed.js`:
+1. **Checkout the example setup commit**
+   Follow the sample commit: https://github.com/LucianRadu/chatgpt-eds/commit/3ca34d66958bac8c2e4a4bda08930f1e7bb817f5
 
-   ```javascript
-   /*
-    * AEM Embed - Embeds AEM content into any page
-    * See: https://www.aem.live/docs/aem-embed
-    */
    
-   const observedSections = new WeakSet();
-   
-   /**
-    * Load CSS from a given path.
-    */
-   function loadCSS(href) {
-     if (document.querySelector(`head > link[href="${href}"]`)) {
-       return;
-     }
-     const link = document.createElement('link');
-     link.rel = 'stylesheet';
-     link.href = href;
-     document.head.append(link);
-   }
-   
-   /**
-    * Forward custom events from iframe to parent
-    */
-   function forwardCustomEvents(iframe) {
-     iframe.contentWindow.addEventListener('message', (e) => {
-       if (e.data && e.data.type === 'aem-embed-custom-event') {
-         window.dispatchEvent(new CustomEvent(e.data.event, { detail: e.data.detail }));
-       }
-     });
-   }
-   
-   /**
-    * Observer for section loading
-    */
-   function observeSections(container) {
-     const sections = container.querySelectorAll('.section');
-     sections.forEach((section) => {
-       if (!observedSections.has(section)) {
-         observedSections.add(section);
-         const observer = new MutationObserver(() => {
-           section.dataset.sectionStatus = 'loaded';
-         });
-         observer.observe(section, { childList: true, subtree: true });
-       }
-     });
-   }
-   
-   class AEMEmbed extends HTMLElement {
-     constructor() {
-       super();
-       this.attachShadow({ mode: 'open' });
-     }
-   
-     connectedCallback() {
-       const url = this.getAttribute('url');
-       if (!url) {
-         console.error('AEM Embed: url attribute is required');
-         return;
-       }
-   
-       // Create iframe
-       const iframe = document.createElement('iframe');
-       iframe.src = url;
-       iframe.style.width = '100%';
-       iframe.style.border = 'none';
-       iframe.style.display = 'block';
-   
-       // Auto-resize iframe based on content
-       iframe.addEventListener('load', () => {
-         forwardCustomEvents(iframe);
-         
-         const resizeObserver = new ResizeObserver(() => {
-           const body = iframe.contentDocument?.body;
-           if (body) {
-             const height = body.scrollHeight;
-             iframe.style.height = `${height}px`;
-             observeSections(body);
-           }
-         });
-   
-         if (iframe.contentDocument?.body) {
-           resizeObserver.observe(iframe.contentDocument.body);
-         }
-       });
-   
-       this.shadowRoot.appendChild(iframe);
-     }
-   }
-   
-   customElements.define('aem-embed', AEMEmbed);
-   ```
 
 2. **Commit and Push**
-   ```bash
-   git add scripts/aem-embed.js
-   git commit -m "Add AEM Embed support"
-   git push
-   ```
+  Commit and push your changes
 
 3. **Verify the Script is Available**
    - Wait for the deployment
-   - Access: `https://main--my-mcp-widgets--yourusername.aem.live/scripts/aem-embed.js`
+   - Access: `https://main--my-aem-widgets--yourusername.aem.live/scripts/aem-embed.js`
    - You should see your JavaScript code
 
 ### Step 2.2: Test AEM Embed (Optional)
 
 Create a test page to verify AEM Embed works:
 
-1. **Create `test-embed.html` in your EDS project:**
+1. **Create `test-embed.html` in your local EDS project:**
    ```html
    <!DOCTYPE html>
    <html>
@@ -192,15 +83,19 @@ Create a test page to verify AEM Embed works:
    </body>
    </html>
    ```
-
-2. **Test it at:**
+2. **Start local server**
+   ```bash
+   npm install
+   aem up
    ```
-   https://main--my-mcp-widgets--yourusername.aem.live/test-embed.html
+3. **Test it at:**
+   ```
+   https://localhost:3000/test-embed.html
    ```
 
 ---
 
-## Part 3: Create Widget Content in EDS
+## Part 4: Create Widget Content in EDS
 
 Now let's create the actual content that will be displayed in your widget.
 
@@ -208,98 +103,46 @@ Now let's create the actual content that will be displayed in your widget.
 
 1. **Create a New Document**
    
-   In your EDS authoring environment (GitHub/SharePoint), create a new file:
-   - Path: `widgets/team-dashboard.md` (or `widgets/team-dashboard` in SharePoint)
+   In your EDS authoring environment (https://da.live/#/organization/repository) , create a new file:
+   - Path: `widgets/hello-workshop` 
 
 2. **Add the Widget Content**
+![image](./image.png)
 
-   ```markdown
-   # Team Dashboard
-   
-   ## Current Sprint: Sprint 24
-   
-   ### Team Velocity
-   
-   | Metric | Value |
-   |--------|-------|
-   | Story Points Completed | 34 |
-   | Tasks Remaining | 12 |
-   | Sprint Progress | 68% |
-   
-   ### Team Members
-   
-   - 👤 **Alice Johnson** - Frontend Lead
-   - 👤 **Bob Smith** - Backend Developer  
-   - 👤 **Carol Davis** - UX Designer
-   - 👤 **David Chen** - QA Engineer
-   
-   ---
-   
-   ### Quick Actions
-   
-   - [View Sprint Board](https://example.com/sprint)
-   - [Daily Standup Notes](https://example.com/standup)
-   - [Team Calendar](https://example.com/calendar)
-   ```
+3. **Preview and Publish**
 
-3. **Add Custom Styling (Optional)**
+4. **Create an EDS block for hello-workshop**
 
-   Create `widgets/team-dashboard.css`:
-   ```css
-   .team-dashboard {
-     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-     max-width: 800px;
-     margin: 0 auto;
-     padding: 20px;
-   }
-   
-   .team-dashboard h1 {
-     color: #1e40af;
-     border-bottom: 3px solid #3b82f6;
-     padding-bottom: 10px;
-   }
-   
-   .team-dashboard table {
-     width: 100%;
-     border-collapse: collapse;
-     margin: 20px 0;
-   }
-   
-   .team-dashboard table td {
-     padding: 12px;
-     border: 1px solid #e5e7eb;
-   }
-   
-   .team-dashboard table tr:nth-child(even) {
-     background-color: #f9fafb;
-   }
-   
-   .team-dashboard ul {
-     list-style: none;
-     padding: 0;
-   }
-   
-   .team-dashboard ul li {
-     padding: 10px;
-     margin: 5px 0;
-     background: #eff6ff;
-     border-radius: 5px;
-   }
-   ```
+   Under `/blocks` create:
+   - `/blocks/hello-workshop/hello-workshop.js`
+   - `/blocks/hello-workshop/hello-workshop.css`
 
-4. **Commit and Verify**
+Add the following in `/blocks/hello-workshop/hello-workshop.js`
+
+```javascript
+export default async function decorate(block, onDataLoaded) {
+  block.textContent = 'Content loading...';
+  onDataLoaded.then((data) => {
+    // eslint-disable-next-line no-console
+    console.log('Data loaded', data);
+    block.textContent = 'Data loaded';
+  });
+}
+
+```
+
+5. **Commit and Verify**
    ```bash
-   git add widgets/
-   git commit -m "Add team dashboard widget content"
+   git add .
+   git commit -m "Add widget content"
    git push
    ```
 
-5. **Preview Your Widget**
+6. **Preview Your Widget**
    ```
-   https://main--my-mcp-widgets--yourusername.aem.live/widgets/team-dashboard
+   https://main--my-aem-widgets--yourusername.aem.live/widgets/hello-workshop
    ```
-   
-   You should see your formatted team dashboard content.
+  
 
 ---
 
@@ -311,17 +154,17 @@ Now we'll integrate this EDS content into an action.
 
 1. **Navigate to Your Project**
    ```bash
-   cd /path/to/mcp-edge-compute-typescript
+   cd /path/to/llm-conversion-bridge
    ```
 
 2. **Generate the Action with Widget**
    ```bash
-   node scripts/generate-action.js teamDashboard --widget
+   make create-action NAME=helloWorkshop WIDGET=true
    ```
 
    This creates:
    ```
-   server/src/actions/teamDashboard/
+   server/src/actions/helloWorkshop/
    ├── index.ts                    # Action handler
    └── widget/
        ├── index.ts                # Widget metadata
@@ -330,28 +173,28 @@ Now we'll integrate this EDS content into an action.
 
 ### Step 4.2: Update the Widget Template
 
-1. **Edit `server/src/actions/teamDashboard/widget/template.html`**
+1. **Edit `server/src/actions/helloWorkshop/widget/template.html`**
 
    Replace the content with your EDS URLs:
    ```html
-   <script src="https://main--my-mcp-widgets--yourusername.aem.live/scripts/aem-embed.js" type="module"></script>
+   <script src="https://main--my-aem-widgets--yourusername.aem.live/scripts/aem-embed.js" type="module"></script>
    <div>
-       <aem-embed url="https://main--my-mcp-widgets--yourusername.aem.live/widgets/team-dashboard"></aem-embed>
+       <aem-embed url="https://main--my-aem-widgets--yourusername.aem.live/widgets/hello-workshop"></aem-embed>
    </div>
    ```
 
-   **Important:** Replace `yourusername` and `my-mcp-widgets` with your actual GitHub username and repository name.
+   **Important:** Replace `yourusername` and `my-aem-widgets` with your actual GitHub username and repository name.
 
 ### Step 4.3: Update the Widget Metadata
 
-1. **Edit `server/src/actions/teamDashboard/widget/index.ts`**
+1. **Edit `server/src/actions/helloWorkshop/widget/index.ts`**
 
    Customize the widget metadata:
    ```typescript
    export const widgetMeta = {
-       uri: "ui://aem-widget/team-dashboard-widget.html",
-       name: "teamDashboardWidget",
-       description: "Team Dashboard widget showing sprint progress and team members",
+       uri: "ui://aem-widget/hello-workshop-widget.html",
+       name: "helloWorkshopWidget",
+       description: "Sample widget",
        mimeType: "text/html+skybridge",
        htmlFile: "template.html",
        _meta: {
@@ -363,18 +206,18 @@ Now we'll integrate this EDS content into an action.
 
 ### Step 4.4: Update the Action Handler
 
-1. **Edit `server/src/actions/teamDashboard/index.ts`**
+1. **Edit `server/src/actions/helloWorkshop/index.ts`**
 
    Customize the action definition:
    ```typescript
-   const teamDashboard: Action = {
+   const helloWorkshop: Action = {
      version: '0.0.1',
-     name: "teamDashboard",
+     name: "helloWorkshop",
      isPublished: true,
      hasAemWidget: true,
      definition: {
-       title: "Team Dashboard",
-       description: "Displays the current team dashboard with sprint progress, team members, and quick actions",
+       title: "Hello Workshop",
+       description: "This is a sample action",
        inputSchema: z.object({
          // No input parameters needed for this example
        }),
@@ -385,21 +228,19 @@ Now we'll integrate this EDS content into an action.
        },
        _meta: {
          "openai/outputTemplate": "ui://aem-widget/team-dashboard-widget.html",
-         "openai/toolInvocation/invoking": "Loading team dashboard",
-         "openai/toolInvocation/invoked": "Team dashboard loaded",
+         "openai/toolInvocation/invoking": "Saying hello...",
+         "openai/toolInvocation/invoked": "Said hello",
          "openai/widgetAccessible": true,
          "openai/resultCanProduceWidget": true,
        },
      },
      handler: async (args: {}): Promise<ActionHandlerResult> => {
        const startTime = Date.now();
-       logger.info('MCP: action=tool_invoked;tool=teamDashboard;status=starting');
 
        try {
-         logger.info('MCP: action=tool_execution;tool=teamDashboard;status=processing');
 
          const now = new Date();
-         const responseText = `Team dashboard loaded successfully at ${now.toISOString()}`;
+         const responseText = `Said hello successfully at ${now.toISOString()}`;
 
          const result = {
            content: [{
@@ -417,12 +258,10 @@ Now we'll integrate this EDS content into an action.
          };
 
          const executionTime = Date.now() - startTime;
-         logger.info(`MCP: action=tool_completed;tool=teamDashboard;status=success;duration_ms=${executionTime}`);
 
          return result;
        } catch (error: any) {
          const executionTime = Date.now() - startTime;
-         logger.error(`MCP: action=tool_completed;tool=teamDashboard;status=error;duration_ms=${executionTime};error=${error.message}`);
 
          return {
            content: [{
@@ -437,24 +276,8 @@ Now we'll integrate this EDS content into an action.
      }
    };
 
-   export default teamDashboard;
+   export default helloWorkshop;
    ```
-
-### Step 4.5: Register the Action
-
-1. **Generate the Action Index**
-   ```bash
-   make generate-actions
-   ```
-
-   This automatically registers your new action in `server/src/actions/index.ts` and `server/src/actions/index-widgets.ts`.
-
-2. **Verify the Registration**
-   ```bash
-   grep -r "teamDashboard" server/src/actions/index.ts
-   ```
-
-   You should see your action imported and exported.
 
 ---
 
@@ -464,7 +287,7 @@ Now we'll integrate this EDS content into an action.
 
 1. **Install Dependencies** (if not already done)
    ```bash
-   npm install
+   make setup
    ```
 
 2. **Build the Project**
@@ -494,14 +317,14 @@ Now we'll integrate this EDS content into an action.
 
 2. **Create a Custom Test** (Optional)
 
-   Create `tests/actions/teamDashboard.test.ts`:
+   Create `tests/actions/helloWorkshop.test.ts`:
    ```typescript
    import { describe, expect, it } from '@jest/globals';
-   import teamDashboard from '../../server/src/actions/teamDashboard';
+   import helloWorkshop from '../../server/src/actions/helloWorkshop';
 
-   describe('teamDashboard action', () => {
+   describe('helloWorkshop action', () => {
      it('should return success with team dashboard data', async () => {
-       const result = await teamDashboard.handler({});
+       const result = await helloWorkshop.handler({});
        
        expect(result.success).toBe(true);
        expect(result.content).toBeDefined();
@@ -511,7 +334,7 @@ Now we'll integrate this EDS content into an action.
      });
 
      it('should include timestamp', async () => {
-       const result = await teamDashboard.handler({});
+       const result = await helloWorkshop.handler({});
        
        expect(result.timestamp).toBeDefined();
        expect(typeof result.timestamp).toBe('number');
@@ -521,14 +344,14 @@ Now we'll integrate this EDS content into an action.
 
 3. **Run Your Test**
    ```bash
-   npm test -- teamDashboard
+   npm test -- helloWorkshop
    ```
 
 ### Step 5.3: Local Development Testing
 
 1. **Start the Local Server** (if supported)
    ```bash
-   make dev
+   make serve
    ```
 
 2. **Test the Action**
@@ -541,13 +364,18 @@ Now we'll integrate this EDS content into an action.
 ## Part 6: Deploy and Verify
 
 ### Step 6.1: Deploy to Fastly
+1. Setup credentials
+ ```bash
+export AEM_COMPUTE_TOKEN=<your_token>
+export AEM_COMPUTE_SERVICE=<your_service_id>
+```  
 
-1. **Deploy the Service**
+2. **Deploy the Service**
    ```bash
    make deploy
    ```
 
-2. **Verify Deployment**
+3. **Verify Deployment**
    - Check that the deployment succeeded
    - Note your service URL
 
@@ -559,208 +387,12 @@ Now we'll integrate this EDS content into an action.
 
 2. **Test the Action**
    ```
-   User: "Show me the team dashboard"
+   User: "Say hello"
    ```
 
    The AI should:
-   - Invoke your `teamDashboard` action
+   - Invoke your `helloWorkshop` action
    - Display the widget with your EDS content
    - Show the team information in a nicely formatted view
 
 ---
-
-## Troubleshooting
-
-### Widget Not Displaying
-
-**Problem:** The widget shows as blank or doesn't load.
-
-**Solutions:**
-1. Check browser console for errors
-2. Verify EDS URL is accessible: `https://main--my-mcp-widgets--yourusername.aem.live/widgets/team-dashboard`
-3. Verify AEM Embed script is loading: `https://main--my-mcp-widgets--yourusername.aem.live/scripts/aem-embed.js`
-4. Check for CORS issues (EDS should handle this automatically)
-
-### Action Not Appearing
-
-**Problem:** The AI doesn't recognize your action.
-
-**Solutions:**
-1. Verify you ran `make generate-actions`
-2. Check `server/src/actions/index.ts` includes your action
-3. Rebuild the project: `make build`
-4. Restart your client
-
-### TypeScript Errors
-
-**Problem:** Build fails with TypeScript errors.
-
-**Solutions:**
-1. Check that all imports are correct
-2. Verify the action structure matches the `Action` type
-3. Ensure `z` (Zod) is imported for schema validation
-4. Run `npm install` to ensure all dependencies are present
-
-### EDS Content Not Updating
-
-**Problem:** Changes to EDS content don't appear in the widget.
-
-**Solutions:**
-1. Clear browser cache
-2. Wait a few minutes for EDS to rebuild
-3. Check the preview URL directly to verify content is published
-4. Try adding a cache-busting parameter: `?v=2`
-
----
-
-## Advanced Topics
-
-### Adding Dynamic Data to Widgets
-
-You can pass data from your action handler to the widget through `structuredContent`:
-
-```typescript
-const result = {
-  content: [{
-    type: "text" as const,
-    text: responseText
-  }],
-  structuredContent: {
-    teamName: "Engineering Team Alpha",
-    sprint: sprintNumber,
-    members: teamMembers,
-    // This data can be consumed by the widget
-  },
-  success: true,
-  timestamp: now.getTime()
-};
-```
-
-### Adding Input Parameters
-
-To make your action accept parameters:
-
-```typescript
-inputSchema: z.object({
-  teamId: z.string().describe("The ID of the team to display"),
-  sprintNumber: z.number().optional().describe("Specific sprint number to show"),
-}),
-```
-
-Then use these in your handler:
-
-```typescript
-handler: async (args: { teamId: string; sprintNumber?: number }): Promise<ActionHandlerResult> => {
-  const { teamId, sprintNumber } = args;
-  // Use teamId to fetch team-specific data
-}
-```
-
-### Creating Dynamic EDS Pages
-
-You can create parameterized EDS pages:
-1. Create a base template in EDS
-2. Use query parameters to pass data
-3. Use EDS JavaScript to dynamically populate content
-4. Example: `https://main--my-mcp-widgets--yourusername.aem.live/widgets/team-dashboard?teamId=123`
-
----
-
-## Best Practices
-
-### Security
-- ✅ Never expose sensitive data in widgets
-- ✅ Validate all input parameters using Zod schemas
-- ✅ Use read-only actions when possible (`readOnlyHint: true`)
-- ✅ Follow the principle of least privilege
-
-### Performance
-- ✅ Keep widget HTML minimal and efficient
-- ✅ Use EDS caching effectively
-- ✅ Avoid loading large assets in widgets
-- ✅ Test widget load times
-
-### User Experience
-- ✅ Provide clear descriptions for actions
-- ✅ Use meaningful widget titles and descriptions
-- ✅ Design responsive widgets that work on different screen sizes
-- ✅ Include error states in your widgets
-
-### Maintainability
-- ✅ Use descriptive naming conventions
-- ✅ Comment complex logic
-- ✅ Write tests for your actions
-- ✅ Keep widget content separate from logic
-- ✅ Version your actions (`version: '0.0.1'`)
-
----
-
-## Workshop Exercise
-
-Now that you've learned the basics, try creating your own widget:
-
-### Exercise: Weather Dashboard Widget
-
-Create an action that displays a weather dashboard:
-
-1. **EDS Content** (`widgets/weather-dashboard.md`):
-   - Current temperature
-   - Weather condition (sunny, cloudy, etc.)
-   - 5-day forecast table
-   - Weather alerts section
-
-2. **Action**: `weatherDashboard`
-   - Optional input: `location` (city name)
-   - Returns weather data
-   - Displays in widget
-
-3. **Bonus Challenges**:
-   - Add custom CSS for weather icons
-   - Make the widget responsive
-   - Add real-time data integration
-   - Include interactive elements (click to see more details)
-
----
-
-## Resources
-
-### Documentation
-- [AEM Edge Delivery Services](https://www.aem.live/developer/tutorial)
-- [AEM Embed Documentation](https://www.aem.live/docs/aem-embed)
-- [Zod Schema Validation](https://zod.dev/)
-
-### Example Projects
-- [Sample EDS Widgets](https://github.com/LucianRadu/chatgpt-eds)
-
-### Getting Help
-- Check the project README: `README.md`
-- Review existing actions: `server/src/actions/`
-- Refer to the widget guide: `server/src/widgets/README.md`
-- Ask questions in the workshop chat
-
----
-
-## Conclusion
-
-Congratulations! You've learned how to:
-- ✅ Set up an EDS environment from scratch
-- ✅ Configure AEM Embed for content integration
-- ✅ Create rich content in EDS
-- ✅ Build an MCP action with widget support
-- ✅ Deploy and test your solution
-
-This architecture allows you to:
-- Author content visually in EDS
-- Leverage EDS's performance and caching
-- Create rich, interactive widgets for AI assistants
-- Maintain separation between content and logic
-- Scale efficiently with edge computing
-
-**Next Steps:**
-- Explore more complex widgets
-- Integrate with real data sources
-- Create reusable widget templates
-- Share your widgets with the team
-
-Happy coding! 🚀
-
