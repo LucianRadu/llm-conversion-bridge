@@ -14,7 +14,7 @@
  */
 
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
-import type { ZodType } from 'zod';
+import { z, type ZodType } from 'zod';
 import actions from './actions/index';
 import { logger } from './utils/logger';
 import { resources as widgetResources } from './actions/index-widgets';
@@ -105,13 +105,20 @@ export function createMCPServer(): McpServer {
     // Use _meta from action definition directly (if provided)
     const meta = action.definition._meta ? { ...action.definition._meta } : undefined;
 
+    // Adapt ZodObject to the raw shape expected by the MCP SDK typings
+    const toolInputSchema: z.ZodRawShape | undefined =
+      action.definition.inputSchema instanceof z.ZodObject
+        ? (action.definition.inputSchema as z.ZodObject<any, any, any>).shape
+        : undefined;
+
     server.registerTool(
       action.name,
       {
         title: action.definition.title,
         description: action.definition.description,
-        // Note: inputSchema expects ZodRawShape, but our actions use ZodObject
-        // The SDK will handle validation through the underlying Server
+        inputSchema: toolInputSchema,
+        // Note: inputSchema can be provided as a Zod schema; the SDK will
+        // validate inputs and also surface schema to clients.
         annotations: action.definition.annotations,
         _meta: meta && Object.keys(meta).length > 0 ? meta : undefined
       },
