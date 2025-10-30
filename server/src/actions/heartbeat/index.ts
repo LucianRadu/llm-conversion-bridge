@@ -24,9 +24,9 @@ const heartbeat: Action = {
   definition: {
     title: "System Heartbeat",
     description: "Returns a simple heartbeat text with current timestamp to verify the MCP server is responsive and functioning properly. Responds with plain text only, no widgets or complex formatting.",
-    inputSchema: z.object({
+    inputSchema: {
       // No input parameters required for heartbeat
-    }),
+    },
     // To disable the approval prompt for the tool
     annotations: {
       destructiveHint: false,

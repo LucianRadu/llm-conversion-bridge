@@ -79,9 +79,9 @@ const ${camelName}: Action = {
   definition: {
     title: "${actionName.charAt(0).toUpperCase() + actionName.slice(1)}",
     description: "Description for ${actionName}",
-    inputSchema: z.object({
-      // Add your input parameters here
-    }),
+    inputSchema: {
+      // Add your input parameters here (e.g., paramName: z.string())
+    },
     // To disable the approval prompt for the tool
     annotations: {
       destructiveHint: false,
