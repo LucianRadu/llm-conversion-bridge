@@ -14,7 +14,8 @@
  */
 
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
-import { z, type ZodType } from 'zod';
+import { z } from 'zod';
+import { zodToJsonSchema } from 'zod-to-json-schema';
 import actions from './actions/index';
 import { logger } from './utils/logger';
 import { resources as widgetResources } from './actions/index-widgets';
@@ -30,7 +31,7 @@ interface ToolModule {
   definition: {
     title: string;
     description: string;
-    inputSchema: ZodType<any, any, any>;
+    inputSchema: z.ZodRawShape;
     annotations?: {
       destructiveHint?: boolean;
       openWorldHint?: boolean;
@@ -105,36 +106,24 @@ export function createMCPServer(): McpServer {
     // Use _meta from action definition directly (if provided)
     const meta = action.definition._meta ? { ...action.definition._meta } : undefined;
 
-    // Adapt ZodObject to the raw shape expected by the MCP SDK typings
-    const toolInputSchema: z.ZodRawShape | undefined =
-      action.definition.inputSchema instanceof z.ZodObject
-        ? (action.definition.inputSchema as z.ZodObject<any, any, any>).shape
-        : undefined;
-
+    // Pass raw shape to SDK - it will wrap with z.object() internally
     server.registerTool(
       action.name,
       {
         title: action.definition.title,
         description: action.definition.description,
-        inputSchema: toolInputSchema,
-        // Note: inputSchema can be provided as a Zod schema; the SDK will
-        // validate inputs and also surface schema to clients.
+        inputSchema: action.definition.inputSchema,
         annotations: action.definition.annotations,
         _meta: meta && Object.keys(meta).length > 0 ? meta : undefined
       },
       async (args, extra) => {
         // Log action invocation at MCP level
-        console.log(`[${APP_NAME}] action ${action.name} was invoked`);
+        console.log(`[${APP_NAME}] action ${action.name} was invoked with args:`, JSON.stringify(args));
 
-        try {
-          // Validate args using the action's inputSchema
-          const validatedArgs = action.definition.inputSchema.parse(args || {});
-          const result = await action.handler(validatedArgs);
-          return result;
-        } catch (error) {
-          console.error(`Error executing action ${action.name}:`, error);
-          throw error;
-        }
+        // Note: SDK already validates with inputSchema before calling this handler
+        // This is just for additional handler-level validation if needed
+        const result = await action.handler(args);
+        return result;
       }
     );
   });

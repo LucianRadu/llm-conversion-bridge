@@ -24,9 +24,9 @@ const helloWorldEDS: Action = {
   definition: {
     title: "Hello World EDS",
     description: "Returns a Hello World EDS message with timestamp in a nice visual widget with rounded corners and centered styling. Displays current server time in an interactive card format.",
-    inputSchema: z.object({
+    inputSchema: {
       // No input parameters required for hello world widget
-    }),
+    },
     // To disable the approval prompt for the widget
     annotations: {
       destructiveHint: false,

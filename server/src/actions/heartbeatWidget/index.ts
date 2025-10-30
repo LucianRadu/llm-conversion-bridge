@@ -24,9 +24,9 @@ const heartbeatWidget: Action = {
   definition: {
     title: "Heartbeat Widget",
     description: "Returns a heartbeat timestamp in a nice visual widget with rounded corners and centered styling. Displays current server time in an interactive card format.",
-    inputSchema: z.object({
+    inputSchema: {
       // No input parameters required for heartbeat widget
-    }),
+    },
     // To disable the approval prompt for the widget
     annotations: {
       destructiveHint: false,
