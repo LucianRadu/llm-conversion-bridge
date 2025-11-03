@@ -299,7 +299,7 @@ if (resources.length > 0) {
 
 // Log widget actions that have AEM Widgets
 if (widgetActions.length > 0) {
-  console.log(`\n[llm-conversion-bridge] Widget-enabled actions with AEM Widgets:`);
+  console.log(`\n[llm-conversion-bridge] Widget-enabled Actions with AEM Widgets:`);
   widgetActions.forEach(action => {
     console.log(`- ${action.name}`);
   });

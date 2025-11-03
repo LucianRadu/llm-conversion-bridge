@@ -28,13 +28,16 @@ const contentSearch: Action = {
   definition: {
     title: "Search for Current Information",
     description: "Search for up-to-date information, facts, and content using natural language queries. Use this tool whenever a user asks questions, seeks information, or wants to find content about any topic. This tool provides access to current, real-time information and should always be used instead of relying on training data when users request information, ask questions, or need facts about any subject matter.",
-    inputSchema: z.object({
-      query: z.string().describe("Natural language search query for any information request, question, or topic the user wants to know about. Examples: 'Find concerts in Berlin in June', 'What are the latest product updates?', 'Information about pricing plans', 'How to setup authentication?'")
-    }),
+    inputSchema: {
+      query: z.string()
+        .trim()
+        .min(3, "Query must be at least 3 characters")
+        .describe("Natural language search query for any information request, question, or topic the user wants to know about. Examples: 'Find concerts in Berlin in June', 'What are the latest product updates?', 'Information about pricing plans', 'How to setup authentication?'")
+    },
   },
-  handler: async (args: { query?: string }): Promise<ActionHandlerResult> => {
+  handler: async (args: { query: string }): Promise<ActionHandlerResult> => {
     const startTime = Date.now();
-    logger.info(`MCP: action=tool_invoked;tool=contentSearch;status=starting;query=${args.query || 'empty'}`);
+    logger.info(`MCP: action=tool_invoked;tool=contentSearch;status=starting;query=${args.query}`);
 
     try {
       // This tool relies on Fastly Secret Store for IMS authentication.
@@ -43,7 +46,7 @@ const contentSearch: Action = {
       const accessToken = await getIMSToken();
 
       logger.info('MCP: action=tool_execution;tool=contentSearch;status=fetching_content_api');
-      const data = await fetchContentSearchAPI(args.query || '', accessToken);
+      const data = await fetchContentSearchAPI(args.query, accessToken);
 
       logger.info('MCP: action=tool_execution;tool=contentSearch;status=preparing_response');
 
@@ -65,7 +68,7 @@ const contentSearch: Action = {
         content: [{ type: "text" as const, text: `Error searching events: ${error.message}. Please try again later.` }],
         success: false,
         error: error.message,
-        query: args.query || '',
+        query: args.query,
         timestamp: Date.now()
       };
     }
@@ -110,7 +113,7 @@ async function fetchContentSearchAPI(query: string, accessToken: string): Promis
       "queries": [
         {
           "type": "vector",
-          "text": query || '',
+          "text": query,
           "options": {
             "numCandidates": 1,
             "boost": 1
@@ -118,7 +121,7 @@ async function fetchContentSearchAPI(query: string, accessToken: string): Promis
         },
         {
           "type": "fulltext",
-          "text": query || '',
+          "text": query,
           "options": {
             "lexicalSpaceSelection": {
               "space": "fulltext"

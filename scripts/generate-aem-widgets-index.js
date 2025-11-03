@@ -215,7 +215,7 @@ if (resources.length > 0) {
 
 // Log widget actions that have AEM Widgets
 if (widgetActions.length > 0) {
-  console.log(\`\\n[${appName}] Widget-enabled actions with AEM Widgets:\`);
+  console.log(\`\\n[${appName}] Widget-enabled Actions with AEM Widgets:\`);
   widgetActions.forEach(action => {
     console.log(\`- \${action.name}\`);
   });
@@ -259,7 +259,7 @@ resourceFiles.forEach(file => {
 });
 
 if (widgetEnabledActions.length > 0) {
-  console.log(`\n[${appName}] Found ${widgetEnabledActions.length} widget-enabled actions:`);
+  console.log(`\n[${appName}] Found ${widgetEnabledActions.length} widget-enabled Actions:`);
   widgetEnabledActions.forEach(action => {
     console.log(`- ${action}`);
   });

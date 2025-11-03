@@ -1,4 +1,5 @@
 import contentSearch from '../../server/src/actions/contentSearch';
+import { z } from 'zod';
 
 // Mock the dependencies
 jest.mock('fastly:secret-store');
@@ -75,11 +76,75 @@ describe('contentSearch Tool', () => {
     });
 
     it('should have correct input schema', () => {
-      const schema = contentSearch.definition.inputSchema;
-      expect(schema).toBeDefined();
-      // Test that it accepts a query parameter
+      const rawSchema = contentSearch.definition.inputSchema;
+      expect(rawSchema).toBeDefined();
+      // Wrap raw shape with z.object() to test
+      const schema = z.object(rawSchema);
       const result = schema.safeParse({ query: 'test query' });
       expect(result.success).toBe(true);
+    });
+
+    it('should reject missing query parameter', () => {
+      const schema = z.object(contentSearch.definition.inputSchema);
+      const result = schema.safeParse({});
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        expect(result.error.issues[0].message).toContain('Required');
+      }
+    });
+
+    it('should accept query with exactly 3 characters', () => {
+      const schema = z.object(contentSearch.definition.inputSchema);
+      const result = schema.safeParse({ query: 'abc' });
+      expect(result.success).toBe(true);
+      if (result.success) {
+        expect(result.data.query).toBe('abc');
+      }
+    });
+
+    it('should accept query with 3+ characters and trim whitespace', () => {
+      const schema = z.object(contentSearch.definition.inputSchema);
+      const result = schema.safeParse({ query: '  foo  ' });
+      expect(result.success).toBe(true);
+      if (result.success) {
+        expect(result.data.query).toBe('foo');
+      }
+    });
+
+    it('should reject empty string query', () => {
+      const schema = z.object(contentSearch.definition.inputSchema);
+      const result = schema.safeParse({ query: '' });
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        expect(result.error.issues[0].message).toContain('at least 3 characters');
+      }
+    });
+
+    it('should reject whitespace-only query', () => {
+      const schema = z.object(contentSearch.definition.inputSchema);
+      const result = schema.safeParse({ query: '        ' });
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        expect(result.error.issues[0].message).toContain('at least 3 characters');
+      }
+    });
+
+    it('should reject query with less than 3 characters', () => {
+      const schema = z.object(contentSearch.definition.inputSchema);
+      const result = schema.safeParse({ query: 'fo' });
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        expect(result.error.issues[0].message).toContain('at least 3 characters');
+      }
+    });
+
+    it('should reject query with less than 3 characters after trimming', () => {
+      const schema = z.object(contentSearch.definition.inputSchema);
+      const result = schema.safeParse({ query: '  fo  ' });
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        expect(result.error.issues[0].message).toContain('at least 3 characters');
+      }
     });
   });
 
@@ -155,53 +220,8 @@ describe('contentSearch Tool', () => {
       expect(result.error).toBe('IMS token failed');
     });
 
-    it('should handle empty query', async () => {
-      const mockApiResponse = {
-        ok: true,
-        text: jest.fn().mockResolvedValue(JSON.stringify({ results: [] }))
-      };
-
-      fetchMock.mockResolvedValue(mockApiResponse as any);
-
-      const result = await contentSearch.handler({ query: '' });
-
-      expect(result).toMatchObject({
-        content: [{ type: "text", text: '{"results":[]}' }],
-        success: true,
-        timestamp: expect.any(Number)
-      });
-
-      expect(fetchMock).toHaveBeenCalledWith(
-        expect.any(String),
-        expect.objectContaining({
-          body: expect.stringContaining('"text":""')
-        })
-      );
-    });
-
-    it('should handle missing query parameter', async () => {
-      const mockApiResponse = {
-        ok: true,
-        text: jest.fn().mockResolvedValue(JSON.stringify({ results: [] }))
-      };
-
-      fetchMock.mockResolvedValue(mockApiResponse as any);
-
-      const result = await contentSearch.handler({});
-
-      expect(result).toMatchObject({
-        content: [{ type: "text", text: '{"results":[]}' }],
-        success: true,
-        timestamp: expect.any(Number)
-      });
-
-      expect(fetchMock).toHaveBeenCalledWith(
-        expect.any(String),
-        expect.objectContaining({
-          body: expect.stringContaining('"text":""')
-        })
-      );
-    });
+    // Note: Empty query and missing query tests are now in "Action Definition" section
+    // as schema validation tests, since the SDK validates before calling the handler
 
     it('should handle non-JSON API response', async () => {
       const mockApiResponse = {

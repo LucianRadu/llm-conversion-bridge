@@ -24,9 +24,9 @@ const systemStatusWidget: Action = {
   definition: {
     title: "System Status Widget",
     description: "Displays system status dashboard with CPU, memory, uptime, and active sessions metrics in a visual widget.",
-    inputSchema: z.object({
+    inputSchema: {
       // No input parameters required for system status widget
-    }),
+    },
     // To disable the approval prompt for the widget
     annotations: {
       destructiveHint: false,

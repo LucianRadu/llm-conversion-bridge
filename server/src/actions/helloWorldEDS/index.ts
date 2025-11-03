@@ -23,10 +23,10 @@ const helloWorldEDS: Action = {
   hasAemWidget: true,
   definition: {
     title: "Hello World EDS",
-    description: "Returns a heartbeat timestamp in a nice visual widget with rounded corners and centered styling. Displays current server time in an interactive card format.",
-    inputSchema: z.object({
-      // No input parameters required for heartbeat widget
-    }),
+    description: "Returns a Hello World EDS message with timestamp in a nice visual widget with rounded corners and centered styling. Displays current server time in an interactive card format.",
+    inputSchema: {
+      // No input parameters required for hello world widget
+    },
     // To disable the approval prompt for the widget
     annotations: {
       destructiveHint: false,
@@ -43,17 +43,17 @@ const helloWorldEDS: Action = {
   },
   handler: async (args: {}): Promise<ActionHandlerResult> => {
     const startTime = Date.now();
-    logger.info('MCP: action=tool_invoked;tool=heartbeatWidget;status=starting');
+    logger.info('MCP: action=tool_invoked;tool=helloWorldEDS;status=starting');
 
     try {
-      logger.info('MCP: action=tool_execution;tool=heartbeatWidget;status=generating_data');
+      logger.info('MCP: action=tool_execution;tool=helloWorldEDS;status=generating_data');
 
       const now = new Date();
       const utcTimestamp = now.toISOString();
       const localTime = now.toLocaleString();
-      const responseText = `Heartbeat widget displayed with timestamp ${utcTimestamp}`;
+      const responseText = `Hello World EDS widget displayed with timestamp ${utcTimestamp}`;
 
-      logger.info('MCP: action=tool_execution;tool=heartbeatWidget;status=preparing_widget');
+      logger.info('MCP: action=tool_execution;tool=helloWorldEDS;status=preparing_widget');
 
       const result = {
         content: [{
@@ -69,17 +69,17 @@ const helloWorldEDS: Action = {
       };
 
       const executionTime = Date.now() - startTime;
-      logger.info(`MCP: action=tool_completed;tool=heartbeatWidget;status=success;duration_ms=${executionTime}`);
+      logger.info(`MCP: action=tool_completed;tool=helloWorldEDS;status=success;duration_ms=${executionTime}`);
 
       return result;
     } catch (error: any) {
       const executionTime = Date.now() - startTime;
-      logger.error(`MCP: action=tool_completed;tool=heartbeatWidget;status=error;duration_ms=${executionTime};error=${error.message}`);
+      logger.error(`MCP: action=tool_completed;tool=helloWorldEDS;status=error;duration_ms=${executionTime};error=${error.message}`);
 
       return {
         content: [{
           type: "text" as const,
-          text: `Error generating heartbeat widget: ${error.message}`
+          text: `Error generating Hello World EDS widget: ${error.message}`
         }],
         success: false,
         error: error.message,
@@ -90,4 +90,3 @@ const helloWorldEDS: Action = {
 };
 
 export default helloWorldEDS;
-

@@ -5,11 +5,6 @@ on:
   workflow_dispatch:
   pull_request:
     types: [opened, synchronize, reopened]
-    branches:
-      - boilerplate-001
-  push:
-    branches:
-      - boilerplate-001
 jobs:
   build-test:
     runs-on: ubuntu-latest
