@@ -93,12 +93,30 @@ describe('contentSearch Tool', () => {
       }
     });
 
+    it('should accept query with exactly 3 characters', () => {
+      const schema = z.object(contentSearch.definition.inputSchema);
+      const result = schema.safeParse({ query: 'abc' });
+      expect(result.success).toBe(true);
+      if (result.success) {
+        expect(result.data.query).toBe('abc');
+      }
+    });
+
+    it('should accept query with 3+ characters and trim whitespace', () => {
+      const schema = z.object(contentSearch.definition.inputSchema);
+      const result = schema.safeParse({ query: '  foo  ' });
+      expect(result.success).toBe(true);
+      if (result.success) {
+        expect(result.data.query).toBe('foo');
+      }
+    });
+
     it('should reject empty string query', () => {
       const schema = z.object(contentSearch.definition.inputSchema);
       const result = schema.safeParse({ query: '' });
       expect(result.success).toBe(false);
       if (!result.success) {
-        expect(result.error.issues[0].message).toContain('Query cannot be empty');
+        expect(result.error.issues[0].message).toContain('at least 3 characters');
       }
     });
 
@@ -107,7 +125,25 @@ describe('contentSearch Tool', () => {
       const result = schema.safeParse({ query: '        ' });
       expect(result.success).toBe(false);
       if (!result.success) {
-        expect(result.error.issues[0].message).toContain('Query cannot contain only whitespace');
+        expect(result.error.issues[0].message).toContain('at least 3 characters');
+      }
+    });
+
+    it('should reject query with less than 3 characters', () => {
+      const schema = z.object(contentSearch.definition.inputSchema);
+      const result = schema.safeParse({ query: 'fo' });
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        expect(result.error.issues[0].message).toContain('at least 3 characters');
+      }
+    });
+
+    it('should reject query with less than 3 characters after trimming', () => {
+      const schema = z.object(contentSearch.definition.inputSchema);
+      const result = schema.safeParse({ query: '  fo  ' });
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        expect(result.error.issues[0].message).toContain('at least 3 characters');
       }
     });
   });

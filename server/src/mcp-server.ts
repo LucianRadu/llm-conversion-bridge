@@ -62,15 +62,15 @@ export function createMCPServer(): McpServer {
   const widgetActions = publishedActions.filter(action => action.hasAemWidget);
 
   // Log action registration with nice formatting
-  console.log(`\n[${APP_NAME}] Successfully loaded server/src/actions/index.ts with ${publishedActions.length} MCP actions:`);
+  console.log(`\n[${APP_NAME}] Successfully loaded server/src/actions/index.ts with ${publishedActions.length} MCP Actions:`);
   publishedActions.forEach(action => {
     const widgetIndicator = action.hasAemWidget ? ' (aem-widget)' : '';
     const fileName = (action as any).fileName || `${action.name}.ts`;
-    console.log(`- ${fileName} -> ${action.name} (version: ${action.version})${widgetIndicator}`);
+    console.log(`- ${fileName} -> ${action.name} v${action.version}${widgetIndicator}`);
   });
 
   if (widgetActions.length > 0) {
-    console.log(`\n[${APP_NAME}] Widget-enabled MCP actions:`);
+    console.log(`\n[${APP_NAME}] Widget-enabled Actions:`);
     widgetActions.forEach(action => {
       console.log(`- ${action.name}`);
     });
@@ -79,7 +79,7 @@ export function createMCPServer(): McpServer {
   // Register widget resources using server.registerResource()
   // Following the pattern from: https://developers.openai.com/apps-sdk/build/mcp-server
   widgetResources.forEach(widgetResource => {
-    logger.info(`Registering resource: ${widgetResource.uri}`);
+    logger.info(`Register AEM Widget: ${widgetResource.uri}`);
     
     server.registerResource(
       widgetResource.name,
@@ -101,7 +101,7 @@ export function createMCPServer(): McpServer {
   // Register tools using server.registerTool()
   // Following the pattern from: https://developers.openai.com/apps-sdk/build/mcp-server
   publishedActions.forEach(action => {
-    logger.info(`Registering tool: ${action.name}`);
+    logger.info(`Register action: ${action.name}`);
 
     // Use _meta from action definition directly (if provided)
     const meta = action.definition._meta ? { ...action.definition._meta } : undefined;

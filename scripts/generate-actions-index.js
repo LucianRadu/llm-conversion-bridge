@@ -61,9 +61,13 @@ for (const folder of actionFolders) {
     // Try to extract the action name from name: 'actionName' in the file
     const nameMatch = content.match(/name\s*:\s*['"]([\w.-]+)['"]/);
     const actualActionName = nameMatch ? nameMatch[1] : folder.name;
+    // Try to extract version from version: '0.0.1' in the file
+    const versionMatch = content.match(/version\s*:\s*['"]([\d.]+)['"]/);
+    const version = versionMatch ? versionMatch[1] : '0.0.1';
     actionInfo.push({
       filename: folder.name,
-      actionName: actualActionName
+      actionName: actualActionName,
+      version: version
     });
   }
 }
@@ -98,8 +102,8 @@ export default actions;
 
 fs.writeFileSync(indexFile, indexContent.trim() + '\n');
 
-console.log(`\n[${appName}] Successfully generated server/src/actions/index.ts with ${publishedActions.length} MCP actions:`);
+console.log(`\n[${appName}] Successfully generated server/src/actions/index.ts with ${publishedActions.length} MCP Actions:`);
 for (let i = 0; i < actionInfo.length; i++) {
   const info = actionInfo[i];
-  console.log(`- ${info.filename} -> ${info.actionName} (version: 0.0.1)`);
+  console.log(`- ${info.filename} -> ${info.actionName} v${info.version}`);
 } 
