@@ -80,7 +80,8 @@ const ${camelName}: Action = {
     title: "${actionName.charAt(0).toUpperCase() + actionName.slice(1)}",
     description: "Description for ${actionName}",
     inputSchema: {
-      // Add your input parameters here (e.g., paramName: z.string())
+      // Add your input parameters here
+      // Example: query: z.string().trim().min(3, "Query must be at least 3 characters").describe("Search query")
     },
     // To disable the approval prompt for the tool
     annotations: {

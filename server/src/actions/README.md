@@ -22,10 +22,13 @@ const myAction: Action = {
   definition: {
     title: "My Action",
     description: "Description of what this action does",
-    inputSchema: z.object({
-      query: z.string().describe("Input parameter description"),
+    inputSchema: {
+      query: z.string()
+        .trim()
+        .min(3, "Query must be at least 3 characters")
+        .describe("Input parameter description"),
       limit: z.number().optional().describe("Optional parameter"),
-    }),
+    },
   },
   handler: async (args: { query: string; limit?: number }): Promise<ActionHandlerResult> => {
     try {
@@ -73,9 +76,13 @@ const myWidgetTool: Action = {
   definition: {
     title: "My Widget Tool",
     description: "Tool that displays results in a widget",
-    inputSchema: z.object({
+    inputSchema: {
       // Define your input parameters
-    }),
+      message: z.string()
+        .trim()
+        .min(1, "Message is required")
+        .describe("Message to display in widget"),
+    },
   },
   handler: async (args: {}): Promise<ActionHandlerResult> => {
     try {
@@ -133,26 +140,46 @@ export default myWidgetTool;
 
 ### Input Schema Guidelines
 
-Use Zod to define strongly-typed input parameters:
+Use Zod to define strongly-typed input parameters. The MCP SDK expects a plain object with Zod validators (not wrapped in `z.object()`):
 
 ```typescript
-inputSchema: z.object({
-  // Required string parameter
-  query: z.string().describe("Search query"),
+inputSchema: {
+  // Required string parameter with validation
+  query: z.string()
+    .trim()
+    .min(3, "Query must be at least 3 characters")
+    .describe("Search query"),
 
   // Optional number with default
-  limit: z.number().default(10).describe("Maximum results"),
+  limit: z.number()
+    .default(10)
+    .describe("Maximum results"),
 
-  // Optional string parameter
-  category: z.string().optional().describe("Filter by category"),
+  // Optional string parameter with validation
+  category: z.string()
+    .trim()
+    .min(1)
+    .optional()
+    .describe("Filter by category"),
 
   // Boolean parameter
-  includeMetadata: z.boolean().default(false).describe("Include metadata in results"),
+  includeMetadata: z.boolean()
+    .default(false)
+    .describe("Include metadata in results"),
 
   // Enum parameter
-  sortBy: z.enum(["date", "relevance", "title"]).default("relevance").describe("Sort order"),
-}),
+  sortBy: z.enum(["date", "relevance", "title"])
+    .default("relevance")
+    .describe("Sort order"),
+},
 ```
+
+**Important**:
+- Use a plain object `{ }`, **NOT** `z.object({ })`
+- The MCP SDK automatically wraps it with `z.object()` internally
+- Always use `.trim()` on string inputs to handle whitespace
+- Use `.min()` for minimum length validation (cleaner than `.refine()`)
+- Add clear error messages to validation constraints
 
 ## File Generation
 
@@ -209,9 +236,12 @@ See [Adding New AEM Widgets](../widgets/README.md) for detailed AEM Widget creat
 - Include meaningful error messages
 
 ### 3. Input Validation
-- Use Zod schemas for type safety
-- Add descriptions to all parameters
-- Set appropriate defaults for optional parameters
+- Use plain object with Zod validators (NOT `z.object()` wrapper)
+- Always use `.trim()` on string inputs to handle whitespace
+- Use `.min()` for minimum length validation
+- Add clear descriptions with `.describe()` to all parameters
+- Set appropriate defaults with `.default()` for optional parameters
+- Provide meaningful error messages in validation constraints
 
 ### 4. Response Format
 - Always return `ActionHandlerResult`
