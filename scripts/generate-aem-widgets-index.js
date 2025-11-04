@@ -149,10 +149,14 @@ const resourceMappings = resourceFiles.map(file => {
   const constName = file.actionName + 'Resource';
 
   // Check if this resource corresponds to a widget-enabled action
-  const matchingAction = widgetEnabledActions.find(action =>
-    file.actionName.toLowerCase().includes(action.toLowerCase()) ||
-    action.toLowerCase().includes(file.actionName.toLowerCase())
-  );
+  // Normalize both names by removing dots and converting to lowercase for comparison
+  const normalizeActionName = (name) => name.replace(/\./g, '').toLowerCase();
+
+  const matchingAction = widgetEnabledActions.find(action => {
+    const normalizedAction = normalizeActionName(action);
+    const normalizedFile = normalizeActionName(file.actionName);
+    return normalizedAction === normalizedFile;
+  });
 
   if (matchingAction && file.htmlPath) {
     return `    if (action.name === '${matchingAction}') {

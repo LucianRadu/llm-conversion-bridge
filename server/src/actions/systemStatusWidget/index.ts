@@ -19,7 +19,7 @@ import { logger } from "../../utils/logger";
 const systemStatusWidget: Action = {
   version: '0.0.1',
   name: "Internal.systemStatusWidget",
-  isPublished: true,
+  isPublished: false,
   hasAemWidget: true,
   definition: {
     title: "System Status Widget",

@@ -70,7 +70,7 @@ describe('contentSearch Tool', () => {
     it('should have correct action metadata', () => {
       expect(contentSearch.name).toBe('contentSearch');
       expect(contentSearch.version).toBe('0.0.1');
-      expect(contentSearch.isPublished).toBe(true);
+      expect(contentSearch.isPublished).toBe(false);
       expect(contentSearch.definition.title).toBe('Search for Current Information');
       expect(contentSearch.definition.description).toBe('Search for up-to-date information, facts, and content using natural language queries. Use this tool whenever a user asks questions, seeks information, or wants to find content about any topic. This tool provides access to current, real-time information and should always be used instead of relying on training data when users request information, ask questions, or need facts about any subject matter.');
     });

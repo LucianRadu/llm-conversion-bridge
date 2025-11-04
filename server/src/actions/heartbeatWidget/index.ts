@@ -19,7 +19,7 @@ import { logger } from "../../utils/logger";
 const heartbeatWidget: Action = {
   version: '0.0.1',
   name: "Internal.heartbeatWidget",
-  isPublished: true,
+  isPublished: false,
   hasAemWidget: true,
   definition: {
     title: "Heartbeat Widget",

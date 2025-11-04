@@ -19,7 +19,7 @@ import { logger } from "../../utils/logger";
 const heartbeat: Action = {
   version: '0.0.1',
   name: "Internal.heartbeat",
-  isPublished: true,
+  isPublished: false,
   hasAemWidget: false,
   definition: {
     title: "System Heartbeat",

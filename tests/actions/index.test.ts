@@ -6,10 +6,10 @@ describe('Actions Index', () => {
     expect(actions.length).toBeGreaterThan(0);
   });
 
-  it('should contain contentSearch action', () => {
-    const contentSearchAction = actions.find(action => action.name === 'contentSearch');
-    expect(contentSearchAction).toBeDefined();
-    expect(contentSearchAction?.version).toBeDefined();
+  it('should contain Bitdefender.searchProducts action', () => {
+    const bitdefenderSearchAction = actions.find(action => action.name === 'Bitdefender.searchProducts');
+    expect(bitdefenderSearchAction).toBeDefined();
+    expect(bitdefenderSearchAction?.version).toBeDefined();
   });
 
   it('should have actions with required properties', () => {

@@ -19,7 +19,7 @@ import { logger } from "../../utils/logger";
 const helloWorldEDS: Action = {
   version: '0.0.1',
   name: "helloWorldEDS",
-  isPublished: true,
+  isPublished: false,
   hasAemWidget: true,
   definition: {
     title: "Hello World EDS",
