@@ -152,6 +152,7 @@ const transports = new Map<string, FastlyStreamableHTTPTransport>();
  * Creates a standardized error response for Fastly
  */
 function createErrorResponse(code: ErrorCode, message: string, id: any = null, status: number = 400): Response {
+  logger.error(`StreamableHTTP: action=error;code=${code};message=${message};id=${id};status=${status}`);
   const timestamp = new Date().toISOString();
   return new Response(JSON.stringify({
     jsonrpc: JSON_RPC_VERSION,
@@ -200,22 +201,34 @@ async function handleMCPRequest(req: Request): Promise<Response> {
     const sessionId = req.headers.get('mcp-session-id');
     const sessionLog = sessionId ? `;session=${sessionId}` : '';
     logger.info(`StreamableHTTP: action=received;method=${req.method}${sessionLog}`);
+    
+    // Log all headers for debugging
+    const headers: Record<string, string> = {};
+    req.headers.forEach((value, key) => {
+      headers[key] = value;
+    });
+    logger.info(`StreamableHTTP: headers=${JSON.stringify(headers)}`);
 
     // Handle GET requests (for SSE streaming - return simple response)
     if (req.method === 'GET') {
+      let effectiveSessionId = sessionId;
+      
       if (!sessionId) {
-        return createErrorResponse(
-          ErrorCode.InvalidRequest,
-          "GET requests require mcp-session-id header"
-        );
-      }
-
-      const sessionExists = await sessionManager.getSession(sessionId);
-      if (!sessionExists) {
-        return createErrorResponse(
-          ErrorCode.InvalidRequest,
-          "Session not found or expired"
-        );
+        // No session ID provided - create a new one
+        logger.info(`StreamableHTTP: GET request without session ID, creating new session`);
+        effectiveSessionId = uuidv4();
+        sessionManager.setSession(effectiveSessionId);
+        logger.info(`StreamableHTTP: New session ${effectiveSessionId} auto-created for GET request`);
+      } else {
+        // Check if session exists
+        const sessionExists = sessionManager.getSession(sessionId);
+        if (!sessionExists) {
+          // Session not found or expired - create a new one
+          logger.info(`StreamableHTTP: GET request session ${sessionId} not found, creating new session`);
+          effectiveSessionId = uuidv4();
+          sessionManager.setSession(effectiveSessionId);
+          logger.info(`StreamableHTTP: New session ${effectiveSessionId} auto-created to replace expired ${sessionId}`);
+        }
       }
 
       // For StreamableHTTP GET requests, return simple acknowledgment
@@ -224,7 +237,7 @@ async function handleMCPRequest(req: Request): Promise<Response> {
         status: 200,
         headers: {
           'Content-Type': 'text/plain',
-          'mcp-session-id': sessionId
+          'mcp-session-id': effectiveSessionId
         }
       });
     }
@@ -254,23 +267,28 @@ async function handleMCPRequest(req: Request): Promise<Response> {
 
       // Store transport and session
       transports.set(newSessionId, transport);
-      await sessionManager.setSession(newSessionId);
+      sessionManager.setSession(newSessionId);
 
       // Process the initialize request
       const response = await transport.processRequest(parsedBody);
       logger.info(`StreamableHTTP: Session ${newSessionId} initialized`);
-      await sessionManager.logSessionStats();
+      sessionManager.logSessionStats();
 
       return createStreamableResponse(response, newSessionId);
     }
 
     // Handle requests with existing session ID
     if (sessionId) {
+      logger.info(`StreamableHTTP: Handling request with session ID: ${sessionId}`);
       let transport = transports.get(sessionId);
+      let effectiveSessionId = sessionId;
 
       if (!transport) {
+        logger.info(`StreamableHTTP: No transport found in memory for session ${sessionId}, checking cache`);
         // Check if session exists in manager
-        const sessionExists = await sessionManager.getSession(sessionId);
+        const sessionExists = sessionManager.getSession(sessionId);
+        logger.info(`StreamableHTTP: Session ${sessionId} exists in cache: ${sessionExists}`);
+        
         if (sessionExists) {
           // Recreate transport for existing session
           logger.info(`StreamableHTTP: action=recreating;transport=session;session=${sessionId}`);
@@ -278,10 +296,20 @@ async function handleMCPRequest(req: Request): Promise<Response> {
           await server.connect(transport);
           transports.set(sessionId, transport);
         } else {
-          return createErrorResponse(
-            ErrorCode.InvalidRequest,
-            "Session not found or expired"
-          );
+          // Session not found or expired - create a new one automatically
+          logger.info(`StreamableHTTP: Session ${sessionId} not found or expired, creating new session`);
+          const newSessionId = uuidv4();
+          effectiveSessionId = newSessionId;
+          
+          logger.info(`StreamableHTTP: action=auto-creating;session=${newSessionId}`);
+          transport = new FastlyStreamableHTTPTransport(newSessionId);
+          await server.connect(transport);
+          
+          // Store transport and session
+          transports.set(newSessionId, transport);
+          sessionManager.setSession(newSessionId);
+          
+          logger.info(`StreamableHTTP: New session ${newSessionId} auto-created to replace expired ${sessionId}`);
         }
       } else {
         logger.info(`StreamableHTTP: Using existing transport for session: ${sessionId}`);
@@ -289,14 +317,26 @@ async function handleMCPRequest(req: Request): Promise<Response> {
 
       // Process the request
       const response = await transport.processRequest(parsedBody);
-      return createStreamableResponse(response, sessionId);
+      return createStreamableResponse(response, effectiveSessionId);
     }
 
-    // No session ID and not initialization
-    return createErrorResponse(
-      ErrorCode.InvalidRequest,
-      "Session required - send initialize first or include mcp-session-id header"
-    );
+    // No session ID and not initialization - auto-create a new session
+    logger.info(`StreamableHTTP: No session ID provided and not initialize request, creating new session`);
+    const newSessionId = uuidv4();
+    
+    logger.info(`StreamableHTTP: action=auto-creating;session=${newSessionId}`);
+    const transport = new FastlyStreamableHTTPTransport(newSessionId);
+    await server.connect(transport);
+    
+    // Store transport and session
+    transports.set(newSessionId, transport);
+    sessionManager.setSession(newSessionId);
+    
+    logger.info(`StreamableHTTP: New session ${newSessionId} auto-created for request without session ID`);
+    
+    // Process the request
+    const response = await transport.processRequest(parsedBody);
+    return createStreamableResponse(response, newSessionId);
 
   } catch (error) {
     logger.error('StreamableHTTP: Error in request handling:', error);
@@ -324,9 +364,9 @@ async function handleDeleteMCP(req: Request): Promise<Response> {
       }
 
       // Remove session from manager
-      const sessionExists = await sessionManager.getSession(sessionId);
+      const sessionExists = sessionManager.getSession(sessionId);
       if (sessionExists) {
-        await sessionManager.deleteSession(sessionId);
+        sessionManager.deleteSession(sessionId);
         logger.info(`StreamableHTTP: Session ${sessionId} deleted successfully`);
       } else {
         logger.info(`StreamableHTTP: Session ${sessionId} not found - already deleted or expired`);

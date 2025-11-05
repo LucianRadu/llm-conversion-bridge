@@ -14,17 +14,17 @@
  */
 
 /**
- * Bitdefender Products Widget Metadata
+ * Bitdefender Product Details Widget Metadata
  * The HTML content is automatically loaded from template.html during build
  */
 export const widgetMeta = {
-    uri: "ui://aem-widget/bitdefender-products-widget.html",
-    name: "bitdefenderProductsWidget",
-    description: "Bitdefender products listing with search and filtering capabilities",
+    uri: "ui://aem-widget/bitdefender-render-products-widget.html",
+    name: "bitdefenderRenderProductsWidget",
+    description: "Bitdefender product details with comprehensive feature information",
     mimeType: "text/html+skybridge",
     htmlFile: "template.html",
     _meta: {
       "openai/widgetPrefersBorder": true,
-      "openai/widgetDescription": "Displays Bitdefender security products with features and trial information",
+      "openai/widgetDescription": "Displays detailed information about a specific Bitdefender security product",
     }
   };

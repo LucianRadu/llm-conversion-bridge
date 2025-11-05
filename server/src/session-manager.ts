@@ -37,21 +37,24 @@ export class SessionManager {
    * Logs session operation statistics.
    * Note: SimpleCache doesn't provide enumeration, so we log operations rather than counts.
    */
-  async logSessionStats(): Promise<void> {
+  logSessionStats(): void {
     logger.info(`Session operation completed - using SimpleCache with ${this.sessionTTL}s TTL`);
   }
 
   /**
    * Checks if a session exists and is valid (not expired).
    * @param sessionId The session identifier to check
-   * @returns Promise<boolean> True if session exists, false otherwise
+   * @returns boolean True if session exists, false otherwise
    */
-  async getSession(sessionId: string): Promise<boolean> {
+  getSession(sessionId: string): boolean {
     try {
-      const sessionExists = await SimpleCache.get(sessionId);
-      return !!sessionExists;
+      logger.info(`SessionManager: Checking session ${sessionId}`);
+      const sessionExists = SimpleCache.get(sessionId);
+      const exists = !!sessionExists;
+      logger.info(`SessionManager: Session ${sessionId} exists=${exists}`);
+      return exists;
     } catch (error) {
-      logger.error('Error getting session:', error);
+      logger.error(`SessionManager: Error getting session ${sessionId}:`, error);
       return false;
     }
   }
@@ -60,14 +63,21 @@ export class SessionManager {
    * Creates or updates a session with the configured TTL.
    * @param sessionId The session identifier to create/update
    */
-  async setSession(sessionId: string): Promise<void> {
+  setSession(sessionId: string): void {
     try {
-      await SimpleCache.getOrSet(sessionId, async () => ({
-        value: 'active',
-        ttl: this.sessionTTL
-      }));
+      logger.info(`SessionManager: Creating session ${sessionId} with TTL=${this.sessionTTL}s`);
+      
+      // SimpleCache.set is synchronous and takes TTL as third parameter
+      SimpleCache.set(sessionId, 'active', this.sessionTTL);
+      
+      logger.info(`SessionManager: Session ${sessionId} created successfully`);
+      
+      // Verify the session was set by immediately trying to get it
+      const verification = SimpleCache.get(sessionId);
+      logger.info(`SessionManager: Session ${sessionId} verification read: ${verification ? 'SUCCESS' : 'FAILED'}`);
     } catch (error) {
-      logger.error('Error setting session:', error);
+      logger.error(`SessionManager: Error setting session ${sessionId}:`, error);
+      throw error; // Re-throw to surface the error
     }
   }
 
@@ -75,11 +85,13 @@ export class SessionManager {
    * Immediately removes a session from the cache.
    * @param sessionId The session identifier to delete
    */
-  async deleteSession(sessionId: string): Promise<void> {
+  deleteSession(sessionId: string): void {
     try {
-      await SimpleCache.purge(sessionId, { scope: "global" });
+      logger.info(`SessionManager: Deleting session ${sessionId}`);
+      SimpleCache.purge(sessionId);
+      logger.info(`SessionManager: Session ${sessionId} deleted successfully`);
     } catch (error) {
-      logger.error('Error deleting session:', error);
+      logger.error(`SessionManager: Error deleting session ${sessionId}:`, error);
     }
   }
 

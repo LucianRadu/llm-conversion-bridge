@@ -22,79 +22,166 @@ export interface BitdefenderProduct {
   platforms: string[];
   features: string[];
   trialDays: number;
+  trialUrl: string;
   badge?: string;
+  basePrice: number;
+  price: {
+    amount: number;
+    currency: string;
+    period: 'year' | 'month';
+  };
 }
 
 export const MOCK_PRODUCTS: BitdefenderProduct[] = [
   {
-    id: 'premium-security-individual',
-    name: 'Bitdefender Premium Security Individual',
-    tagline: 'One plan to incorporate multi-awarded device security, password management, unlimited VPN traffic with access to blazing-fast servers & email breach check',
-    description: 'Enjoy peace of mind knowing you\'re covered with expert-level protection for your digital life',
+    id: 'ultimate-security-individual',
+    name: 'Bitdefender Ultimate Security Individual',
+    tagline: 'Complete device, data, and identity protection',
+    description: 'Protect your devices, personal data, and online identity with Dark Web monitoring, digital footprint scanning, and real-time breach notifications for up to 5 devices',
     category: 'individual',
-    platforms: ['Windows', 'Mac', 'iOS', 'Android'],
+    platforms: ['Windows', 'macOS', 'iOS', 'Android'],
+    trialUrl: 'https://login.bitdefender.com/central/signup.html?adobe_mc_ref=&icid=button%257Cc%257Cps_i%257Ctrial_link_dw&redirect_url=https:%2F%2Fcentral.bitdefender.com%2Fdashboard%3Fservice%3Dadd_trial%26code%3D9f6b56dc-05a5-405b-b58a-6c3afb5cae31%26login_type%3Dcreate_account%26final_url%3D%2Fdevices&lang=en_US&adobe_mc=MCMID%3D19544693930179770020939471696493833059%7CMCORGID%3D0E920C0F53DA9E9B0A490D45%2540AdobeOrg%7CTS%3D1744281434&_gl=1*12j0pus*_ga*NDkzNTU4MzIyLjE3NjIzMjg4Njg.*_ga_6M0GWNLLWF*czE3NjIzNTM3MjMkbzQkZzEkdDE3NjIzNTM4MDkkajUyJGwwJGgxNjEwNDgxMDc2',
     features: [
-      'Multi-Awarded Antivirus, Malware & Ransomware Protection',
-      'Fully featured password manager to keep your credentials safe',
-      'Premium VPN for complete online privacy, UNLIMITED Traffic',
-      'Scam Copilot',
-      'Cryptomining Protection to prevent the abuse of hackers over your devices',
-      'Innovative Email Protection'
+      'All features from Premium Security Individual',
+      'Identity protection and monitoring',
+      'Dark Web monitoring',
+      'Real-time breach notifications',
+      'Digital footprint scanning',
+      'Security recommendations from Bitdefender experts',
+      'Protection for up to 5 devices',
     ],
     trialDays: 30,
-    badge: 'PREMIUM'
+    badge: 'ULTIMATE',
+    basePrice: 179.99,
+    price: {
+      amount: 129.99,
+      currency: 'USD',
+      period: 'year',
+    },
+  },
+  {
+    id: 'premium-security-individual',
+    name: 'Bitdefender Premium Security Individual',
+    tagline: 'Advanced protection with unlimited VPN and privacy features',
+    description: 'Complete security for up to 5 devices with unlimited Premium VPN, ad blocking, anti-tracker, and webcam protection for maximum online privacy',
+    category: 'individual',
+    platforms: ['Windows', 'macOS', 'iOS', 'Android'],
+    trialUrl: 'https://login.bitdefender.com/central/signup.html?adobe_mc_ref=&icid=button%257Cc%257Cts_i%257Ctrial_link_dw&redirect_url=https:%2F%2Fcentral.bitdefender.com%2Fdashboard%3Fservice%3Dadd_trial%26code%3Dd8bbe4b5-08d0-4c9b-8cf0-c043f63b98da%26login_type%3Dcreate_account%26final_url%3D%2Fdevices&lang=en_US&_gl=1*2z7dvb*_ga*NDkzNTU4MzIyLjE3NjIzMjg4Njg.*_ga_6M0GWNLLWF*czE3NjIzNTM3MjMkbzQkZzEkdDE3NjIzNTM4MzQkajI3JGwwJGgxNjEwNDgxMDc2',
+    features: [
+      'All features from Total Security Individual',
+      'Premium VPN with unlimited traffic',
+      'Access to 4000+ VPN servers in 50+ countries',
+      'Ad-Blocker and Anti-Tracker',
+      'Webcam and microphone protection',
+      'Protection for up to 5 devices',
+      'OneClick Optimizer',
+    ],
+    trialDays: 30,
+    badge: 'POPULAR',
+    basePrice: 119.99,
+    price: {
+      amount: 89.99,
+      currency: 'USD',
+      period: 'year',
+    },
   },
   {
     id: 'total-security-individual',
     name: 'Bitdefender Total Security Individual',
-    tagline: 'Complete multi-device protection with award-winning security',
-    description: 'Comprehensive security suite with minimal system performance impact, protecting all your devices',
+    tagline: 'Essential protection for all your devices',
+    description: '24/7 AI-based real-time protection for up to 5 devices with password management and comprehensive security features',
     category: 'individual',
-    platforms: ['Windows', 'Mac', 'iOS', 'Android'],
+    platforms: ['Windows', 'macOS', 'iOS', 'Android'],
+    trialUrl: 'https://login.bitdefender.com/central/signup.html?adobe_mc_ref=&icid=button%257Cc%257Cts_i%257Ctrial_link_dw&redirect_url=https:%2F%2Fcentral.bitdefender.com%2Fdashboard%3Fservice%3Dadd_trial%26code%3Dd8bbe4b5-08d0-4c9b-8cf0-c043f63b98da%26login_type%3Dcreate_account%26final_url%3D%2Fdevices&lang=en_US&_gl=1*1fwyjo0*_ga*NDkzNTU4MzIyLjE3NjIzMjg4Njg.*_ga_6M0GWNLLWF*czE3NjIzNTM3MjMkbzQkZzEkdDE3NjIzNTM5NTEkajUkbDAkaDE2MTA0ODEwNzY.',
     features: [
-      'Multi-awarded antivirus protection',
-      'Password manager',
-      'Basic VPN (200 MB/day/device)',
-      'Scam Prevention',
-      'Cryptomining Protection',
-      'Multi-device support'
+      '24/7 real-time protection based on AI',
+      'Protection against phishing and online scams',
+      'Password Manager',
+      'Protection for up to 5 devices',
+      'Low performance impact',
+      'Safe browsing protection',
     ],
     trialDays: 30,
-    badge: 'POPULAR'
+    basePrice: 89.99,
+    price: {
+      amount: 59.99,
+      currency: 'USD',
+      period: 'year',
+    },
   },
   {
-    id: 'antivirus-plus',
-    name: 'Bitdefender Antivirus Plus',
-    tagline: 'Essential Windows protection with advanced threat defense',
-    description: 'Award-winning antivirus protection that keeps your Windows PC safe without slowing it down',
-    category: 'individual',
-    platforms: ['Windows'],
+    id: 'gravityzone-business-security-premium',
+    name: 'GravityZone Business Security Premium',
+    tagline: 'Aggressive protection against sophisticated threats',
+    description: 'Ideal for companies seeking aggressive protection against sophisticated threats with advanced machine learning, sandbox analysis, and comprehensive email security',
+    category: 'business',
+    platforms: ['Windows', 'macOS', 'iOS', 'Linux'],
+    trialUrl: 'https://www.bitdefender.com/en-us/business/products/free-trials/business-security-premium-free-trial',
     features: [
-      'Antivirus & malware protection',
-      'Scam prevention',
-      'Web protection',
-      'Ransomware remediation',
-      'Anti-tracker',
-      'Safe Files'
+      'All features from Business Security',
+      'Customizable machine learning (HyperDetect) to automatically combat targeted and advanced attacks',
+      'Sandbox Analyzer for safe threat analysis in cloud-hosted sandbox',
+      'Microsoft Exchange coverage',
+      'Top-tier antispam and antimalware programs for email servers',
+      'Enterprise-level security overview across all protected endpoints',
     ],
-    trialDays: 30
+    trialDays: 30,
+    badge: 'PREMIUM',
+    basePrice: 699.99,
+    price: {
+      amount: 549.99,
+      currency: 'USD',
+      period: 'year',
+    },
   },
   {
-    id: 'antivirus-mac',
-    name: 'Bitdefender Antivirus for Mac',
-    tagline: 'Powerful Mac security with VPN protection',
-    description: 'Complete protection for your Mac against malware, adware, and online threats',
-    category: 'individual',
-    platforms: ['Mac'],
+    id: 'gravityzone-business-security',
+    name: 'GravityZone Business Security',
+    tagline: 'Comprehensive security that proactively reduces risks',
+    description: 'Ideal for small companies wanting comprehensive security that combats threats and proactively reduces risks with network attack defense and device control',
+    category: 'business',
+    platforms: ['Windows', 'macOS', 'iOS', 'Linux'],
+    trialUrl: 'https://www.bitdefender.com/en-us/business/products/free-trials/business-security-free-trial',
     features: [
-      'Real-time virus protection',
-      'Adware blocking',
-      'VPN included',
-      'Time Machine Protection',
-      'Cross-platform malware detection',
-      'Safe browsing'
+      'All features from Small Business Security',
+      'Network Attack Defense to protect against network attacks',
+      'Web access control to allow or block user or application web access',
+      'Device control to prevent data leakage and malware infections from external devices',
+      'Endpoint risk analysis to identify, assess, and remediate endpoint vulnerabilities',
+      'Centralized security management console',
     ],
-    trialDays: 30
+    trialDays: 30,
+    badge: 'POPULAR',
+    basePrice: 499.99,
+    price: {
+      amount: 399.99,
+      currency: 'USD',
+      period: 'year',
+    },
+  },
+  {
+    id: 'gravityzone-small-business-security',
+    name: 'GravityZone Small Business Security',
+    tagline: 'Enterprise-level security at an affordable price',
+    description: 'Ideal for small companies wanting an affordable enterprise-level security solution with set-and-forget protection against phishing, ransomware, and web-based attacks',
+    category: 'business',
+    trialUrl: 'https://www.bitdefender.com/en-us/business/products/free-trials/gravityzone-small-business-security-free-trial',
+    platforms: ['Windows', 'macOS', 'iOS', 'Linux'],
+    features: [
+      'Protection against phishing, ransomware, and web-based attacks',
+      'Set-and-forget protection',
+      'Security overview across all protected endpoints',
+      'Visibility into detected threats',
+      'Enterprise-level protection at SMB pricing',
+      'Easy deployment and management',
+    ],
+    trialDays: 30,
+    basePrice: 299.99,
+    price: {
+      amount: 249.99,
+      currency: 'USD',
+      period: 'year',
+    },
   }
 ];
 

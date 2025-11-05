@@ -21,10 +21,10 @@ const bitdefenderSearchProducts: Action = {
   version: '0.0.1',
   name: "Bitdefender.searchProducts",
   isPublished: true,
-  hasAemWidget: true,
+  hasAemWidget: false,
   definition: {
     title: "Search Bitdefender Products",
-    description: "Browse and search through available Bitdefender security products including Premium Security, Total Security, Antivirus Plus, and Mac protection. Returns product details with features, platforms, and trial information.",
+    description: "Browse and search through available Bitdefender security products including Premium Security, Total Security, Antivirus Plus, and Mac protection. Returns product details with features, platforms, and trial information. After calling this tool, call the renderProducts tool to render the products in a widget.",
     inputSchema: {
       category: z.enum(['individual', 'business', 'enterprise', 'all'])
         .default('all')
@@ -38,14 +38,7 @@ const bitdefenderSearchProducts: Action = {
       destructiveHint: false,
       openWorldHint: false,
       readOnlyHint: true,
-    },
-    _meta: {
-      "openai/outputTemplate": "ui://aem-widget/bitdefender-products-widget.html",
-      "openai/toolInvocation/invoking": "Searching Bitdefender products",
-      "openai/toolInvocation/invoked": "Products found",
-      "openai/widgetAccessible": true,
-      "openai/resultCanProduceWidget": true,
-    },
+    }
   },
   handler: async (args: { category?: string; platform?: string }): Promise<ActionHandlerResult> => {
     const startTime = Date.now();
@@ -85,7 +78,8 @@ const bitdefenderSearchProducts: Action = {
           filters: {
             category: args.category || 'all',
             platform: args.platform || null
-          }
+          },
+          followUpInstruction: "Please render the products in a widget"
         },
         success: true,
         timestamp: Date.now()
