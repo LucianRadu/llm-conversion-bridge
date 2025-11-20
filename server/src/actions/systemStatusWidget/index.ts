@@ -15,6 +15,7 @@
 import { z } from "zod";
 import type { Action, ActionHandlerResult } from "../../types";
 import { logger } from "../../utils/logger";
+import { widgetResourcesByUri } from "../widget-resources";
 
 const systemStatusWidget: Action = {
   version: '0.0.1',
@@ -61,11 +62,24 @@ const systemStatusWidget: Action = {
 
       logger.info('MCP: action=tool_execution;tool=systemStatusWidget;status=preparing_widget');
 
+      // Get the widget HTML resource
+      const widgetResource = widgetResourcesByUri.get("ui://aem-widget/system-status-widget.html");
+
       const result = {
-        content: [{
-          type: "text" as const,
-          text: responseText
-        }],
+        content: [
+          {
+            type: "text" as const,
+            text: responseText
+          },
+          ...(widgetResource ? [{
+            type: "resource" as const,
+            resource: {
+              uri: widgetResource.uri,
+              mimeType: widgetResource.mimeType,
+              text: widgetResource.content
+            }
+          }] : [])
+        ],
         structuredContent: {
           timestamp: utcTimestamp,
           cpuUsage,

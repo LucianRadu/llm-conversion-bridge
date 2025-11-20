@@ -37,8 +37,12 @@ export interface PublishData {
   items: PublishItem[];
 }
 
+export type ContentItem = 
+  | { type: "text"; text: string }
+  | { type: "resource"; resource: { uri: string; mimeType: string; text: string } };
+
 export type ActionHandlerResult = {
-  content: { type: "text"; text: string }[];
+  content: ContentItem[];
   [key: string]: any;
 };
 

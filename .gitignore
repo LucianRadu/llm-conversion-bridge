@@ -33,6 +33,7 @@ future-improvements.md
 *.swo
 *~
 .DS_Store
+.cursor/
 
 # OS generated files
 Thumbs.db
@@ -45,3 +46,6 @@ Thumbs.db
 .env.* 
 
 CLAUDE.md
+
+.aio
+

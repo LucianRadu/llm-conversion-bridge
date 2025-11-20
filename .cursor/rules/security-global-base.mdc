@@ -1,5 +1,6 @@
 ---
-alwaysApply: true
+description: USE WHEN implementing any security-sensitive code, reviewing security posture, or establishing secure coding patterns
+alwaysApply: false
 ---
 These rules define essential practices for writing and generating secure code.  
 They apply universally — to manual development, automated tooling, and AI-generated code.

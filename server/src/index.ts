@@ -149,6 +149,33 @@ class FastlyStreamableHTTPTransport {
 const transports = new Map<string, FastlyStreamableHTTPTransport>();
 
 /**
+ * Helper function to safely stringify and truncate large objects for logging
+ */
+function safeStringify(obj: any, maxLength: number = 5000): string {
+  try {
+    const jsonStr = JSON.stringify(obj, null, 2);
+    if (jsonStr.length > maxLength) {
+      return jsonStr.substring(0, maxLength) + `... (truncated, total length: ${jsonStr.length})`;
+    }
+    return jsonStr;
+  } catch (error) {
+    return `[Unable to stringify: ${error}]`;
+  }
+}
+
+/**
+ * Helper function to log all HTTP headers
+ */
+function logRequestHeaders(req: Request): void {
+  const headers: Record<string, string> = {};
+  req.headers.forEach((value, key) => {
+    headers[key] = value;
+  });
+  logger.info(`StreamableHTTP: === Request Headers ===`);
+  logger.info(`StreamableHTTP: ${safeStringify(headers, 2000)}`);
+}
+
+/**
  * Creates a standardized error response for Fastly
  */
 function createErrorResponse(code: ErrorCode, message: string, id: any = null, status: number = 400): Response {
@@ -200,6 +227,9 @@ async function handleMCPRequest(req: Request): Promise<Response> {
     const sessionId = req.headers.get('mcp-session-id');
     const sessionLog = sessionId ? `;session=${sessionId}` : '';
     logger.info(`StreamableHTTP: action=received;method=${req.method}${sessionLog}`);
+    
+    // Log all request headers for debugging
+    logRequestHeaders(req);
 
     // Handle GET requests (for SSE streaming - return simple response)
     if (req.method === 'GET') {
@@ -231,10 +261,15 @@ async function handleMCPRequest(req: Request): Promise<Response> {
 
     // Handle POST requests (JSON-RPC messages)
     let parsedBody;
+    let rawBodyText = '';
     try {
-      parsedBody = await req.json();
+      // Clone the request to be able to read the body as text if parsing fails
+      const reqClone = req.clone();
+      rawBodyText = await reqClone.text();
+      parsedBody = JSON.parse(rawBodyText);
     } catch (error) {
       logger.error('StreamableHTTP: Failed to parse JSON body:', error);
+      logger.error(`StreamableHTTP: Raw body text: ${rawBodyText.substring(0, 1000)}`);
       return createErrorResponse(
         ErrorCode.ParseError,
         "Invalid JSON in request body"
@@ -242,6 +277,19 @@ async function handleMCPRequest(req: Request): Promise<Response> {
     }
 
     logger.info(`StreamableHTTP: action=processing;method=${parsedBody?.method || 'unknown'}${sessionLog}`);
+    
+    // Log the complete parsed body structure
+    logger.info(`StreamableHTTP: === Parsed JSON-RPC Body ===`);
+    logger.info(`StreamableHTTP: ${safeStringify(parsedBody, 3000)}`);
+    
+    // Special logging for tools/call to see tool name and arguments clearly
+    if (parsedBody?.method === 'tools/call') {
+      const toolName = parsedBody?.params?.name || 'unknown';
+      const toolArgs = parsedBody?.params?.arguments || {};
+      logger.info(`StreamableHTTP: === Tool Call Details ===`);
+      logger.info(`StreamableHTTP: Tool Name: ${toolName}`);
+      logger.info(`StreamableHTTP: Tool Arguments: ${safeStringify(toolArgs, 2000)}`);
+    }
 
     // Handle initialize request
     if (parsedBody?.method === 'initialize') {
