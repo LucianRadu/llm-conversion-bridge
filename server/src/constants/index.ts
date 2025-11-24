@@ -46,7 +46,8 @@ export const API_BASE_PATH = '/bin/api';
 export const MCP_TRANSPORT_PATH = '/mcp-boilerplate';
 
 export const API_ENDPOINTS = {
-  CONTENT_AI: `/adobe/experimental/contentai-expires-20251231/contentAI/search`
+  CONTENT_AI: `/adobe/experimental/contentai-expires-20251231/contentAI/search`,
+  CF_SEARCH: `/adobe/sites/cf/fragments/search`
 } as const;
 
 // Search

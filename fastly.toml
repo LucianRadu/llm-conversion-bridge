@@ -27,6 +27,14 @@ manifest_version = 3
     url = "https://ims-na1.adobelogin.com/"
     override_host = "ims-na1.adobelogin.com"
 
+  [backends.ims-stage]
+    url = "https://ims-na1-stg1.adobelogin.com/"
+    override_host = "ims-na1-stg1.adobelogin.com"
+
+  [backends.aem-author-stage]
+    url = "https://author-p77504-e175976-cmstg.adobeaemcloud.com/"
+    override_host = "author-p77504-e175976-cmstg.adobeaemcloud.com"
+
 [compute]
   # We are using the new JS-Compute runtime
   [compute.javascript]
@@ -38,10 +46,23 @@ manifest_version = 3
       url = "https://ims-na1.adobelogin.com/"
       override_host = "ims-na1.adobelogin.com"
 
+    [local_server.backends.ims-stage]
+      url = "https://ims-na1-stg1.adobelogin.com/"
+      override_host = "ims-na1-stg1.adobelogin.com"
+
+    [local_server.backends.aem-author-stage]
+      url = "https://author-p77504-e175976-cmstg.adobeaemcloud.com/"
+      override_host = "author-p77504-e175976-cmstg.adobeaemcloud.com"
+
 [scripts]
   # The build script to run before deploying.
   build = "npm run build:fastly"
 
 [env]
-  PUBLISH_BASE_URL = "https://publish-p148639-e1512661.adobeaemcloud.com"
-  IMS_FASTLY_BACKEND = "ims-prod"
+  # === STAGE ENVIRONMENT (for testing) ===
+  PUBLISH_BASE_URL = "https://author-p77504-e175976-cmstg.adobeaemcloud.com"
+  IMS_FASTLY_BACKEND = "ims-stage"
+  
+  # === PRODUCTION ENVIRONMENT ===
+  # PUBLISH_BASE_URL = "https://publish-p148639-e1512661.adobeaemcloud.com"
+  # IMS_FASTLY_BACKEND = "ims-prod"

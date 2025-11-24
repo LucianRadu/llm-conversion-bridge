@@ -14,6 +14,8 @@
  */
 import { z } from "zod";
 import { SecretStore } from "fastly:secret-store";
+// @ts-ignore
+import { env } from "fastly:env";
 import { PUBLISH_BASE_URL, API_ENDPOINTS, HTTP_METHOD_POST, HEADERS_JSON, SEARCH_INDEX_NAME } from "../../constants";
 import type { Action, ActionHandlerResult, SearchRequestBody } from "../../types";
 import { logRequestDetails, logResponseHeaders } from "../../utils/tool-logging";
@@ -76,20 +78,56 @@ const contentSearch: Action = {
 };
 
 async function getIMSToken(): Promise<string> {
-  const secrets = new SecretStore('secret_default');
-  const clientIdHandle = await secrets.get('CONTENT_AI_CLIENT_ID');
-  const clientSecretHandle = await secrets.get('CONTENT_AI_CLIENT_SECRET');
-  const scopeHandle = await secrets.get('CONTENT_AI_TOKEN_SCOPE');
-
-  if (!clientIdHandle || !clientSecretHandle || !scopeHandle) {
-    const errorMsg = "Could not find one or more of: CONTENT_AI_CLIENT_ID, CONTENT_AI_CLIENT_SECRET, CONTENT_AI_TOKEN_SCOPE in secret store 'secret_default'.";
-    console.error(`[contentSearch-ims] IMS setup error: ${errorMsg}`);
-    throw new Error(errorMsg);
+  // First priority: Check for direct access token (simplest for local testing)
+  // Try both env() for deployed and process.env for local
+  let directToken = env("CONTENT_AI_ACCESS_TOKEN");
+  if (!directToken && typeof process !== 'undefined' && process.env) {
+    directToken = process.env.CONTENT_AI_ACCESS_TOKEN;
+  }
+  if (directToken) {
+    console.log(`[contentSearch-ims] Using direct access token from CONTENT_AI_ACCESS_TOKEN environment variable`);
+    return directToken;
   }
 
-  const clientId = clientIdHandle.plaintext();
-  const clientSecret = clientSecretHandle.plaintext();
-  const scope = scopeHandle.plaintext();
+  let clientId: string;
+  let clientSecret: string;
+  let scope: string;
+
+  try {
+    // Second priority: Try Fastly SecretStore (deployed environment)
+    const secrets = new SecretStore('secret_default');
+    const clientIdHandle = await secrets.get('CONTENT_AI_CLIENT_ID');
+    const clientSecretHandle = await secrets.get('CONTENT_AI_CLIENT_SECRET');
+    const scopeHandle = await secrets.get('CONTENT_AI_TOKEN_SCOPE');
+
+    if (!clientIdHandle || !clientSecretHandle || !scopeHandle) {
+      throw new Error("Secrets not found in SecretStore");
+    }
+
+    clientId = clientIdHandle.plaintext();
+    clientSecret = clientSecretHandle.plaintext();
+    scope = scopeHandle.plaintext();
+    
+    console.log(`[contentSearch-ims] Using credentials from Fastly SecretStore`);
+  } catch (secretStoreError: any) {
+    // Third priority: Fallback to IMS credentials in environment variables
+    console.log(`[contentSearch-ims] SecretStore not available (${secretStoreError.message}), falling back to environment variables`);
+    
+    // Try both env() for deployed and process.env for local
+    clientId = env("CONTENT_AI_CLIENT_ID") || (typeof process !== 'undefined' && process.env ? process.env.CONTENT_AI_CLIENT_ID : '') || '';
+    clientSecret = env("CONTENT_AI_CLIENT_SECRET") || (typeof process !== 'undefined' && process.env ? process.env.CONTENT_AI_CLIENT_SECRET : '') || '';
+    scope = env("CONTENT_AI_TOKEN_SCOPE") || (typeof process !== 'undefined' && process.env ? process.env.CONTENT_AI_TOKEN_SCOPE : '') || '';
+
+    if (!clientId || !clientSecret || !scope) {
+      const errorMsg = "Could not find authentication credentials. Please set either:\n" +
+                      "- CONTENT_AI_ACCESS_TOKEN (direct bearer token), or\n" +
+                      "- CONTENT_AI_CLIENT_ID, CONTENT_AI_CLIENT_SECRET, and CONTENT_AI_TOKEN_SCOPE (for IMS flow)";
+      console.error(`[contentSearch-ims] IMS setup error: ${errorMsg}`);
+      throw new Error(errorMsg);
+    }
+    
+    console.log(`[contentSearch-ims] Using IMS credentials from environment variables`);
+  }
 
   const ims = new IMS(clientId, clientSecret, scope);
   return await ims.fetchToken();

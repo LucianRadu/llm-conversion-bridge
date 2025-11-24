@@ -208,7 +208,7 @@ describe('contentSearch Tool', () => {
       const result = await contentSearch.handler({ query: 'test query' });
 
       expect(result.success).toBe(false);
-      expect(result.error).toContain('Could not find one or more of: CONTENT_AI_CLIENT_ID');
+      expect(result.error).toContain('Could not find authentication credentials');
     });
 
     it('should handle IMS token fetch error', async () => {

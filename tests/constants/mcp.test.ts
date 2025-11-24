@@ -18,8 +18,8 @@ describe('MCP Constants', () => {
   });
 
   describe('MCP_REQUEST_TIMEOUT', () => {
-    it('should be 30 seconds in milliseconds', () => {
-      expect(MCP_REQUEST_TIMEOUT).toBe(30000);
+    it('should be 60 seconds in milliseconds', () => {
+      expect(MCP_REQUEST_TIMEOUT).toBe(60000);
     });
   });
 }); 

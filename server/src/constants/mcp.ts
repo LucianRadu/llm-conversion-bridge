@@ -33,7 +33,7 @@ export const JSON_RPC_VERSION = '2.0';
 /**
  * MCP request timeout in milliseconds
  */
-export const MCP_REQUEST_TIMEOUT = 30000; // 30 seconds
+export const MCP_REQUEST_TIMEOUT = 60000; // 60 seconds (increased for slow AEM search API)
 
 /**
  * MCP transport endpoint path
