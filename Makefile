@@ -31,6 +31,7 @@ help:
 	@echo "  serve              - Run locally with Fastly server (127.0.0.1:7676) with auto-cleanup"
 	@echo "  serve-only         - Run locally without killing existing processes"
 	@echo "  deploy             - Deploy to Fastly Compute service"
+	@echo "  quick-deploy       - Build and deploy without running tests (uses aio)"
 	@echo "  tail-logs          - Tail logs from deployed service"
 	@echo "  clean              - Clean build artifacts"
 	@echo "  check-env          - Check environment variables and tool versions"
@@ -137,6 +138,23 @@ deploy:
 	@echo "API Endpoint: $(FASTLY_API_ENDPOINT)"
 	@echo ""
 	@export FASTLY_API_ENDPOINT="$(FASTLY_API_ENDPOINT)" && $(FASTLY_CLI) compute deploy --service-id="$(SERVICE_ID)" --token="$${AEM_COMPUTE_TOKEN}" --verbose
+
+# Quick deploy (build + deploy without tests, uses aio CLI)
+.PHONY: quick-deploy
+quick-deploy:
+	@echo ""
+	@echo "================================================================================"
+	@echo " Quick Deploy (no tests)"
+	@echo "================================================================================"
+	@echo ""
+	@echo "Cleaning build artifacts..."
+	rm -rf bin/ pkg/
+	npm run build:fastly
+	$(FASTLY_CLI) compute pack --wasm-binary=bin/main.wasm
+	aio aem edge-compute deploy llm-conversion-bridge
+	@echo ""
+	@echo "✓ Deployment complete!"
+	@echo ""
 
 # Log tailing
 .PHONY: tail-logs

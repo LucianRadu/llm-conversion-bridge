@@ -16,7 +16,7 @@ import { z } from "zod";
 import { SecretStore } from "fastly:secret-store";
 // @ts-ignore
 import { env } from "fastly:env";
-import { PUBLISH_BASE_URL, API_ENDPOINTS, HTTP_METHOD_POST, HEADERS_JSON, SEARCH_INDEX_NAME } from "../../constants";
+import { PUBLISH_BASE_URL, API_ENDPOINTS, HTTP_METHOD_POST, HEADERS_JSON, SEARCH_INDEX_NAME, PUBLISH_FASTLY_BACKEND } from "../../constants";
 import type { Action, ActionHandlerResult, SearchRequestBody } from "../../types";
 import { logRequestDetails, logResponseHeaders } from "../../utils/tool-logging";
 import { logger } from "../../utils/logger";
@@ -178,6 +178,8 @@ async function fetchContentSearchAPI(query: string, accessToken: string): Promis
       Authorization: `Bearer ${accessToken}`
     },
     body: JSON.stringify(searchRequestBody),
+    // Only specify backend if configured, otherwise use dynamic backend resolution
+    ...(PUBLISH_FASTLY_BACKEND ? { backend: PUBLISH_FASTLY_BACKEND } : {})
   };
 
   logRequestDetails("contentSearch", url, fetchOptions, "remote");

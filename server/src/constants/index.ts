@@ -30,8 +30,8 @@ export const USER_AGENT = `${APP_NAME}/${APP_VERSION}`;
 // URL CONSTANTS
 // ===============================
 
-// Base URLs (replace pXXXXXX-eXXXXXX with your actual AEM Cloud Service IDs)
-export const PUBLISH_BASE_URL = env("PUBLISH_BASE_URL") || 'https://publish-pXXXXXX-eXXXXXX.adobeaemcloud.com';
+// Base URLs for AEM Cloud Service
+export const PUBLISH_BASE_URL = env("PUBLISH_BASE_URL") || 'https://author-p77504-e175976-cmstg.adobeaemcloud.com';
 export const PUBLISH_FASTLY_BACKEND = env("PUBLISH_FASTLY_BACKEND") || '';
 
 // IMS-related constants
@@ -47,7 +47,8 @@ export const MCP_TRANSPORT_PATH = '/mcp-boilerplate';
 
 export const API_ENDPOINTS = {
   CONTENT_AI: `/adobe/experimental/contentai-expires-20251231/contentAI/search`,
-  CF_SEARCH: `/adobe/sites/cf/fragments/search`
+  CF_SEARCH: `/adobe/sites/cf/fragments/search`,
+  CF_PREVIEW: `/adobe/experimental/previewtemplates-expires-20260301/sites/cf/fragments`
 } as const;
 
 // Search

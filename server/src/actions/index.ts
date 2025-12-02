@@ -20,6 +20,7 @@ import contentSearch from './contentSearch';
 import heartbeat from './heartbeat';
 import heartbeatWidget from './heartbeatWidget';
 import helloWorldEDS from './helloWorldEDS';
+import previewContentFragment from './previewContentFragment';
 import searchContentFragments from './searchContentFragments';
 import systemStatusWidget from './systemStatusWidget';
 
@@ -43,6 +44,11 @@ const actions = [
     ...helloWorldEDS,
     version: helloWorldEDS.version,
     fileName: 'helloWorldEDS/index.ts'
+  },
+  {
+    ...previewContentFragment,
+    version: previewContentFragment.version,
+    fileName: 'previewContentFragment/index.ts'
   },
   {
     ...searchContentFragments,

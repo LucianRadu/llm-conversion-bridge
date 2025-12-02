@@ -18,6 +18,7 @@
 
 import { widgetMeta as heartbeatWidgetMeta } from './heartbeatWidget/widget';
 import { widgetMeta as helloWorldEDSMeta } from './helloWorldEDS/widget';
+import { widgetMeta as previewContentFragmentMeta } from './previewContentFragment/widget';
 import { widgetMeta as systemStatusWidgetMeta } from './systemStatusWidget/widget';
 import actions from './index';
 
@@ -134,6 +135,193 @@ const helloWorldEDSResource: MCPResource = {
 <div>
     <aem-embed url="https://main--chatgpt-eds--lucianradu.aem.live/widgets/hello-world"></aem-embed>
 </div>
+`
+};
+
+const previewContentFragmentResource: MCPResource = {
+  ...previewContentFragmentMeta,
+  content: `<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        html, body {
+            width: 100%;
+            height: 100%;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+        }
+        body {
+            background: #f8f9fa;
+        }
+        .widget-container {
+            width: 100%;
+            min-height: 400px;
+            padding: 24px;
+            box-sizing: border-box;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #dee2e6;
+            margin-bottom: 20px;
+        }
+        .title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #212529;
+        }
+        .meta {
+            display: flex;
+            gap: 16px;
+            font-size: 12px;
+            color: #6c757d;
+        }
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .meta-label {
+            font-weight: 500;
+        }
+        .preview-frame {
+            width: 100%;
+            min-height: 350px;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            background: #fff;
+            overflow: hidden;
+        }
+        .preview-content {
+            width: 100%;
+            height: 100%;
+            min-height: 350px;
+            border: none;
+        }
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 200px;
+            color: #6c757d;
+            font-size: 14px;
+        }
+        .error {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 200px;
+            color: #dc3545;
+            font-size: 14px;
+            text-align: center;
+            padding: 20px;
+        }
+        .spinner {
+            width: 24px;
+            height: 24px;
+            border: 3px solid #e9ecef;
+            border-top-color: #0d6efd;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 12px;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="widget-container">
+        <div class="header">
+            <div class="title">Content Fragment Preview</div>
+            <div class="meta">
+                <div class="meta-item">
+                    <span class="meta-label">Fragment:</span>
+                    <span id="fragmentId">-</span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-label">Variation:</span>
+                    <span id="variation">main</span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-label">Template:</span>
+                    <span id="templateId">generic</span>
+                </div>
+            </div>
+        </div>
+        <div class="preview-frame">
+            <div id="loading" class="loading">
+                <div class="spinner"></div>
+                Loading preview...
+            </div>
+            <div id="error" class="error" style="display: none;"></div>
+            <iframe id="previewContent" class="preview-content" style="display: none;" sandbox="allow-same-origin"></iframe>
+        </div>
+    </div>
+    <script>
+        function updateWidget() {
+            const data = window.openai?.toolOutput || {};
+            const loadingEl = document.getElementById('loading');
+            const errorEl = document.getElementById('error');
+            const previewEl = document.getElementById('previewContent');
+
+            // Update metadata
+            document.getElementById('fragmentId').textContent = data.fragmentId || '-';
+            document.getElementById('variation').textContent = data.variation || 'main';
+            document.getElementById('templateId').textContent = data.templateId || 'generic';
+
+            if (data.htmlContent) {
+                // Hide loading, show preview
+                loadingEl.style.display = 'none';
+                errorEl.style.display = 'none';
+                previewEl.style.display = 'block';
+
+                // Write HTML content to iframe
+                const doc = previewEl.contentDocument || previewEl.contentWindow.document;
+                doc.open();
+                doc.write(data.htmlContent);
+                doc.close();
+
+                // Auto-resize iframe to content height
+                previewEl.onload = function() {
+                    try {
+                        const contentHeight = doc.body.scrollHeight;
+                        if (contentHeight > 350) {
+                            previewEl.style.height = contentHeight + 'px';
+                        }
+                    } catch (e) {
+                        // Cross-origin issues, keep default height
+                    }
+                };
+            } else if (data.error) {
+                loadingEl.style.display = 'none';
+                previewEl.style.display = 'none';
+                errorEl.style.display = 'flex';
+                errorEl.textContent = data.error;
+            }
+        }
+
+        // Listen for the openai:set_globals event when toolOutput becomes available
+        window.addEventListener('openai:set_globals', (event) => {
+            if (event.detail?.globals?.toolOutput !== undefined) {
+                updateWidget();
+            }
+        });
+
+        // Initial render in case data is already available
+        if (window.openai?.toolOutput) {
+            updateWidget();
+        }
+    </script>
+</body>
+</html>
+
 `
 };
 
@@ -274,6 +462,9 @@ const widgetResources: MCPResource[] = widgetActions
     }
     if (action.name === 'helloWorldEDS') {
       return helloWorldEDSResource;
+    }
+    if (action.name === 'previewContentFragment') {
+      return previewContentFragmentResource;
     }
     if (action.name === 'Internal.systemStatusWidget') {
       return systemStatusWidgetResource;

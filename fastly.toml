@@ -61,6 +61,7 @@ manifest_version = 3
 [env]
   # === STAGE ENVIRONMENT (for testing) ===
   PUBLISH_BASE_URL = "https://author-p77504-e175976-cmstg.adobeaemcloud.com"
+  # PUBLISH_FASTLY_BACKEND not set - uses dynamic backend resolution
   IMS_FASTLY_BACKEND = "ims-stage"
   
   # === PRODUCTION ENVIRONMENT ===

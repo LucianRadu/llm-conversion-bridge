@@ -86,6 +86,9 @@ class FastlyStreamableHTTPTransport {
   public onclose: (() => void) | null = null;
   public onerror: ((error: Error) => void) | null = null;
 
+  // Promise resolver for awaiting async tool responses
+  private responseResolver: ((value: any) => void) | null = null;
+
   constructor(sessionId: string) {
     this.sessionId = sessionId;
   }
@@ -101,11 +104,12 @@ class FastlyStreamableHTTPTransport {
   }
 
   async send(message: any): Promise<void> {
-    // Store the response - will be returned by processRequest
-    this.pendingResponse = message;
+    // Resolve the pending promise when we receive a response from MCP server
+    if (this.responseResolver) {
+      this.responseResolver(message);
+      this.responseResolver = null;
+    }
   }
-
-  private pendingResponse: any = null;
 
   async processRequest(jsonRpcMessage: any): Promise<any> {
     // Set current session ID for tool logging
@@ -123,25 +127,35 @@ class FastlyStreamableHTTPTransport {
     // Handle regular requests
     logger.info(`StreamableHTTP: action=processing;request=${jsonRpcMessage?.method};session=${this.sessionId}`);
 
-    // Reset pending response
-    this.pendingResponse = null;
+    // Create a promise that will be resolved when send() is called
+    const responsePromise = new Promise<any>((resolve, reject) => {
+      this.responseResolver = resolve;
+
+      // Set a timeout to avoid hanging forever (use MCP_REQUEST_TIMEOUT)
+      setTimeout(() => {
+        if (this.responseResolver) {
+          this.responseResolver = null;
+          reject(new Error(`Request timeout after ${MCP_REQUEST_TIMEOUT}ms`));
+        }
+      }, MCP_REQUEST_TIMEOUT);
+    });
 
     // Call onmessage to trigger MCP server processing
     if (this.onmessage) {
       this.onmessage(jsonRpcMessage);
     }
 
-    // Wait a bit for the response to be set by send()
-    await new Promise(resolve => setTimeout(resolve, 10));
-
-    // Return the response that was set by send()
-    const response = this.pendingResponse;
-    logger.info(`StreamableHTTP: action=returning;status=${response ? 'success' : 'null'};session=${this.sessionId}`);
-
-    // Clear session ID after processing
-    currentSessionId = null;
-
-    return response;
+    try {
+      // Wait for the actual response (or timeout)
+      const response = await responsePromise;
+      logger.info(`StreamableHTTP: action=returning;status=success;session=${this.sessionId}`);
+      currentSessionId = null;
+      return response;
+    } catch (error) {
+      logger.error(`StreamableHTTP: action=returning;status=timeout;session=${this.sessionId};error=${error}`);
+      currentSessionId = null;
+      throw error;
+    }
   }
 }
 

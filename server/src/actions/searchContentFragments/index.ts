@@ -16,7 +16,10 @@ import { z } from "zod";
 import { SecretStore } from "fastly:secret-store";
 // @ts-ignore
 import { env } from "fastly:env";
-import { PUBLISH_BASE_URL, API_ENDPOINTS, HTTP_METHOD_GET, HEADERS_COMMON } from "../../constants";
+import { API_ENDPOINTS, HTTP_METHOD_GET, HEADERS_COMMON, PUBLISH_FASTLY_BACKEND } from "../../constants";
+
+// Hardcoded base URL - bypasses environment variable issues with AEM Edge Compute
+const AEM_BASE_URL = "https://author-p77504-e175976-cmstg.adobeaemcloud.com";
 import type { Action, ActionHandlerResult } from "../../types";
 import { logRequestDetails, logResponseHeaders } from "../../utils/tool-logging";
 import { logger } from "../../utils/logger";
@@ -104,7 +107,7 @@ async function getIMSToken(): Promise<string> {
   if (!directToken && typeof process !== 'undefined' && process.env) {
     directToken = process.env.CONTENT_AI_ACCESS_TOKEN;
   }
-  
+
   if (directToken) {
     console.log(`[searchContentFragments-ims] Using direct access token from CONTENT_AI_ACCESS_TOKEN environment variable`);
     return directToken;
@@ -157,7 +160,7 @@ async function getIMSToken(): Promise<string> {
 async function fetchContentFragmentSearchAPI(query: string, limit: number, projection: string, accessToken: string): Promise<any> {
   // URL encode the query parameter
   const encodedQuery = encodeURIComponent(query);
-  const url = `${PUBLISH_BASE_URL}${API_ENDPOINTS.CF_SEARCH}?query=${encodedQuery}&limit=${limit}&projection=${projection}`;
+  const url = `${AEM_BASE_URL}${API_ENDPOINTS.CF_SEARCH}?query=${encodedQuery}&limit=${limit}&projection=${projection}`;
   
   console.log(`[searchContentFragments] Fetching content fragment search API at ${url}`);
 
@@ -170,10 +173,10 @@ async function fetchContentFragmentSearchAPI(query: string, limit: number, proje
       'x-adobe-accept-unsupported-api': '1',
       'x-aem-affinity-type': 'api',
       'x-api-key': 'exc_app',
-      'x-gw-ims-org-id': '8C6043F15F43B6390A49401A@AdobeOrg'
-    }
-    // Note: Dynamic backends (without explicit backend config) might be needed
-    // if the aem-author-stage backend is not configured in production Fastly service
+      'x-gw-ims-org-id': '8EFA1C3367FCF5FF0A494208@AdobeOrg'
+    },
+    // Only specify backend if configured, otherwise use dynamic backend resolution
+    ...(PUBLISH_FASTLY_BACKEND ? { backend: PUBLISH_FASTLY_BACKEND } : {})
   };
 
   logRequestDetails("searchContentFragments", url, fetchOptions, "remote");
