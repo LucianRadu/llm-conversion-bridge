@@ -32,12 +32,20 @@ const searchContentFragments: Action = {
   hasAemWidget: false,
   definition: {
     title: "Search Content Fragments",
-    description: "Search for AEM content fragments using structured queries with filters and sorting. Supports full-text search across fragment title, description, and field values, plus filtering by path, status, model, tags, dates, and authors. Use this tool to find specific content fragments in AEM based on various criteria.",
+    description: `Find, search, or look up content in AEM. Use this tool when users want to:
+- Find content about a topic (e.g., "show me content about surfing", "find articles on Costa Rica")
+- Search for specific articles, pages, or content pieces
+- Look up what content exists on a subject
+- Browse or explore available content by keyword or topic
+
+This searches across all content fragment titles, descriptions, and field values. After finding content, you should typically call 'previewContentFragment' to display the actual content to the user.
+
+Supports filters by path, status, model, tags, dates, and authors. The fullText filter is used for keyword/topic searches.`,
     inputSchema: {
       query: z.string()
         .trim()
         .min(1, "Query JSON is required")
-        .describe("JSON string containing ContentFragmentSearchPattern with filter and sort. Example: {\"filter\":{\"path\":\"/content/dam\",\"fullText\":{\"text\":\"keyword\"},\"status\":[\"PUBLISHED\"]},\"sort\":[{\"on\":\"modifiedOrCreated\",\"order\":\"DESC\"}]}. The fullText search looks in fragment title, description, and all field values."),
+        .describe("JSON string containing ContentFragmentSearchPattern with filter and sort. Example: {\"filter\":{\"fullText\":{\"text\":\"surfing costa rica\"}},\"sort\":[{\"on\":\"modifiedOrCreated\",\"order\":\"DESC\"}]}. Do NOT filter by status unless the user explicitly asks for only 'published' or 'draft' content. The fullText search looks in fragment title, description, and all field values."),
       limit: z.number()
         .optional()
         .default(20)
@@ -107,7 +115,7 @@ async function getIMSToken(): Promise<string> {
   if (!directToken && typeof process !== 'undefined' && process.env) {
     directToken = process.env.CONTENT_AI_ACCESS_TOKEN;
   }
-
+  
   if (directToken) {
     console.log(`[searchContentFragments-ims] Using direct access token from CONTENT_AI_ACCESS_TOKEN environment variable`);
     return directToken;

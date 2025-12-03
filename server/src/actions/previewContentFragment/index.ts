@@ -36,7 +36,14 @@ const previewContentFragment: Action = {
   hasAemWidget: true,
   definition: {
     title: "Preview Content Fragment",
-    description: "Preview a content fragment rendered with a template. Returns an HTML preview of the fragment using either a custom template or the generic template. Use this tool to see how a content fragment will look when rendered.",
+    description: `Display, show, or render content from AEM. Use this tool when users want to:
+- View or see actual content (e.g., "show me that article", "display this content")
+- Read a specific content fragment
+- Preview how content looks when rendered
+
+This tool requires a fragment ID, which is typically obtained from 'searchContentFragments'. When a user asks to "show content about X" or "find and display content about Y", first search for matching fragments, then use this tool to display the results.
+
+Returns a rendered HTML preview of the content fragment.`,
     inputSchema: {
       fragmentId: z.string()
         .trim()
