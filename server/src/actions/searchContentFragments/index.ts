@@ -18,8 +18,8 @@ import { SecretStore } from "fastly:secret-store";
 import { env } from "fastly:env";
 import { API_ENDPOINTS, HTTP_METHOD_GET, HEADERS_COMMON, PUBLISH_FASTLY_BACKEND } from "../../constants";
 
-// Hardcoded base URL - bypasses environment variable issues with AEM Edge Compute
-const AEM_BASE_URL = "https://author-p77504-e175976-cmstg.adobeaemcloud.com";
+// CF Preview Service base URL
+const AEM_BASE_URL = "https://author-p22655-e155390.adobeaemcloud.com";
 import type { Action, ActionHandlerResult } from "../../types";
 import { logRequestDetails, logResponseHeaders } from "../../utils/tool-logging";
 import { logger } from "../../utils/logger";

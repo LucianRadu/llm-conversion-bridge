@@ -25,7 +25,7 @@ import { IMS } from "../../ims";
 const contentSearch: Action = {
   version: '0.0.1',
   name: "contentSearch",
-  isPublished: true,
+  isPublished: false,
   hasAemWidget: false,
   definition: {
     title: "Search for Current Information",

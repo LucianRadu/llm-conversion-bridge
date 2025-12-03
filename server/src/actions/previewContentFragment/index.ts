@@ -16,10 +16,13 @@ import { z } from "zod";
 import { SecretStore } from "fastly:secret-store";
 // @ts-ignore
 import { env } from "fastly:env";
-import { API_ENDPOINTS, HTTP_METHOD_GET, HEADERS_COMMON, PUBLISH_FASTLY_BACKEND } from "../../constants";
+import { HTTP_METHOD_GET, HEADERS_COMMON, PUBLISH_FASTLY_BACKEND } from "../../constants";
 
-// Hardcoded base URL - bypasses environment variable issues with AEM Edge Compute
-const AEM_BASE_URL = "https://author-p77504-e175976-cmstg.adobeaemcloud.com";
+// CF Preview Service base URL
+const AEM_BASE_URL = "https://author-p22655-e155390.adobeaemcloud.com/adobe/experimental/previewtemplates-expires-20260301/sites";
+
+// Default template ID for preview
+const DEFAULT_TEMPLATE_ID = "1770ebee-2bfa-4b74-8c9a-7a1e22b634db";
 import type { Action, ActionHandlerResult } from "../../types";
 import { logRequestDetails, logResponseHeaders } from "../../utils/tool-logging";
 import { logger } from "../../utils/logger";
@@ -210,18 +213,19 @@ async function fetchContentFragmentPreview(
   if (args.variation) {
     queryParams.append('variation', args.variation);
   }
-  if (args.templateId) {
-    queryParams.append('templateId', args.templateId);
-  }
-  if (args.hydrated !== undefined) {
-    queryParams.append('hydrated', String(args.hydrated));
-  }
-  if (args.maxDepth !== undefined) {
-    queryParams.append('maxDepth', String(args.maxDepth));
-  }
+  // Always include templateId - use provided value or default
+  queryParams.append('templateId', args.templateId || DEFAULT_TEMPLATE_ID);
+  
+  // Build hydration as a JSON object (API expects {"enabled":boolean,"maxDepth":number})
+  const hydration = {
+    enabled: args.hydrated ?? true,
+    maxDepth: args.maxDepth ?? 3
+  };
+  queryParams.append('hydration', JSON.stringify(hydration));
 
   const queryString = queryParams.toString();
-  const url = `${AEM_BASE_URL}${API_ENDPOINTS.CF_PREVIEW}/${encodeURIComponent(args.fragmentId)}/preview${queryString ? `?${queryString}` : ''}`;
+  // CF Preview Service uses /cf/fragments path (not the experimental endpoint)
+  const url = `${AEM_BASE_URL}/cf/fragments/${encodeURIComponent(args.fragmentId)}/preview${queryString ? `?${queryString}` : ''}`;
 
   console.log(`[previewContentFragment] Fetching preview from ${url}`);
 

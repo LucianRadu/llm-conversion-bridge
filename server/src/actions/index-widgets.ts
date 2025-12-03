@@ -160,35 +160,7 @@ const previewContentFragmentResource: MCPResource = {
         .widget-container {
             width: 100%;
             min-height: 400px;
-            padding: 24px;
             box-sizing: border-box;
-        }
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding-bottom: 16px;
-            border-bottom: 1px solid #dee2e6;
-            margin-bottom: 20px;
-        }
-        .title {
-            font-size: 16px;
-            font-weight: 600;
-            color: #212529;
-        }
-        .meta {
-            display: flex;
-            gap: 16px;
-            font-size: 12px;
-            color: #6c757d;
-        }
-        .meta-item {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
-        .meta-label {
-            font-weight: 500;
         }
         .preview-frame {
             width: 100%;
@@ -238,23 +210,6 @@ const previewContentFragmentResource: MCPResource = {
 </head>
 <body>
     <div class="widget-container">
-        <div class="header">
-            <div class="title">Content Fragment Preview</div>
-            <div class="meta">
-                <div class="meta-item">
-                    <span class="meta-label">Fragment:</span>
-                    <span id="fragmentId">-</span>
-                </div>
-                <div class="meta-item">
-                    <span class="meta-label">Variation:</span>
-                    <span id="variation">main</span>
-                </div>
-                <div class="meta-item">
-                    <span class="meta-label">Template:</span>
-                    <span id="templateId">generic</span>
-                </div>
-            </div>
-        </div>
         <div class="preview-frame">
             <div id="loading" class="loading">
                 <div class="spinner"></div>
@@ -270,11 +225,6 @@ const previewContentFragmentResource: MCPResource = {
             const loadingEl = document.getElementById('loading');
             const errorEl = document.getElementById('error');
             const previewEl = document.getElementById('previewContent');
-
-            // Update metadata
-            document.getElementById('fragmentId').textContent = data.fragmentId || '-';
-            document.getElementById('variation').textContent = data.variation || 'main';
-            document.getElementById('templateId').textContent = data.templateId || 'generic';
 
             if (data.htmlContent) {
                 // Hide loading, show preview
