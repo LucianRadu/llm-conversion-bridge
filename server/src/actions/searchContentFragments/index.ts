@@ -32,13 +32,14 @@ const searchContentFragments: Action = {
   hasAemWidget: false,
   definition: {
     title: "Search Content Fragments",
-    description: `Find, search, or look up content in AEM. Use this tool when users want to:
-- Find content about a topic (e.g., "show me content about surfing", "find articles on Costa Rica")
-- Search for specific articles, pages, or content pieces
-- Look up what content exists on a subject
-- Browse or explore available content by keyword or topic
+    description: `Find and search for content in AEM. Use this tool to locate content fragments by topic or keyword.
 
-This searches across all content fragment titles, descriptions, and field values. After finding content, you should typically call 'previewContentFragment' to display the actual content to the user.
+IMPORTANT: This tool only returns metadata (titles, IDs), not actual content. To actually SHOW or DISPLAY content to the user, you MUST call 'previewContentFragment' for EACH fragment found. When a user says "show me content about X", search first, then preview ALL matching results (call previewContentFragment multiple times, once per fragment ID).
+
+Use cases:
+- Find content about a topic (e.g., "find articles on Costa Rica", "what content do we have about sales")
+- Search for specific articles or content pieces by keyword
+- Look up or list what content exists on a subject
 
 Supports filters by path, status, model, tags, dates, and authors. The fullText filter is used for keyword/topic searches.`,
     inputSchema: {
@@ -115,6 +116,9 @@ async function getIMSToken(): Promise<string> {
   if (!directToken && typeof process !== 'undefined' && process.env) {
     directToken = process.env.CONTENT_AI_ACCESS_TOKEN;
   }
+  
+  // TODO: For local/prod testing, if no token is found in environment variables,
+  // add a fallback token here: directToken = "your-token-here";
   
   if (directToken) {
     console.log(`[searchContentFragments-ims] Using direct access token from CONTENT_AI_ACCESS_TOKEN environment variable`);

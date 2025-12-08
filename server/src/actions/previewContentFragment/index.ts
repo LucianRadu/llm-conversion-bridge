@@ -22,7 +22,7 @@ import { HTTP_METHOD_GET, HEADERS_COMMON, PUBLISH_FASTLY_BACKEND } from "../../c
 const AEM_BASE_URL = "https://author-p22655-e155390.adobeaemcloud.com/adobe/experimental/previewtemplates-expires-20260301/sites";
 
 // Default template ID for preview
-const DEFAULT_TEMPLATE_ID = "1770ebee-2bfa-4b74-8c9a-7a1e22b634db";
+const DEFAULT_TEMPLATE_ID = "2a46e0a5-e89d-4f25-a5b9-78508338867a";
 import type { Action, ActionHandlerResult } from "../../types";
 import { logRequestDetails, logResponseHeaders } from "../../utils/tool-logging";
 import { logger } from "../../utils/logger";
@@ -36,12 +36,14 @@ const previewContentFragment: Action = {
   hasAemWidget: true,
   definition: {
     title: "Preview Content Fragment",
-    description: `Display, show, or render content from AEM. Use this tool when users want to:
-- View or see actual content (e.g., "show me that article", "display this content")
-- Read a specific content fragment
-- Preview how content looks when rendered
+    description: `Display, show, view, or render the actual content from AEM. This is the tool that makes content visible to users.
 
-This tool requires a fragment ID, which is typically obtained from 'searchContentFragments'. When a user asks to "show content about X" or "find and display content about Y", first search for matching fragments, then use this tool to display the results.
+IMPORTANT: When a user says "show me content about X", you need BOTH tools: first call 'searchContentFragments' to find matching content, then call THIS tool for EACH fragment ID returned. If search returns 4 fragments, call this tool 4 times to show all of them. Do not ask which one to preview—show all results.
+
+Use cases:
+- Show or display content to the user (requires fragment ID from search)
+- View or read a specific content fragment
+- Preview how content looks when rendered
 
 Returns a rendered HTML preview of the content fragment.`,
     inputSchema: {
@@ -155,6 +157,9 @@ async function getIMSToken(): Promise<string> {
   if (!directToken && typeof process !== 'undefined' && process.env) {
     directToken = process.env.CONTENT_AI_ACCESS_TOKEN;
   }
+
+  // TODO: For local/prod testing, if no token is found in environment variables,
+  // add a fallback token here: directToken = "your-token-here";
 
   if (directToken) {
     console.log(`[previewContentFragment-ims] Using direct access token from CONTENT_AI_ACCESS_TOKEN environment variable`);
