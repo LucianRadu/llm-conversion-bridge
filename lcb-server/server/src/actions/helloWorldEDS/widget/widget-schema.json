@@ -1,0 +1,15 @@
+{
+  "uri": "ui://eds-widget/hello-world-eds-widget.html",
+  "name": "helloWorldEDSWidget",
+  "description": "Hello World EDS widget showing a hello world message",
+  "mimeType": "text/html+skybridge",
+  "htmlFile": "template.html",
+  "_meta": {
+    "openai/widgetPrefersBorder": true,
+    "openai/widgetDescription": "Displays a hello world message",
+    "openai:widget_meta": {
+      "script_url": "https://main--eds-001--george-cgg.aem.live/scripts/aem-embed.js",
+      "widget_embed_url": "https://main--eds-001--george-cgg.aem.live/eds-widgets/hello-world"
+    }
+  }
+}

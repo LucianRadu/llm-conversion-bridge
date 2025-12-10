@@ -1,0 +1,28 @@
+{
+  "uri": "ui://eds-widget/bmw-models-widget.html",
+  "name": "getBmwModelsWidget",
+  "description": "Displays BMW vehicle models with current lease offers in a carousel.",
+  "mimeType": "text/html+skybridge",
+  "htmlFile": "template.html",
+  "_meta": {
+    "openai/widgetDescription": "After the widget is loaded and you have access to the data, create a summary of the BMW models showing: Model Name, Year, Category, Lease Price, and Due at Signing. Also, ask the user if they would like to book a test drive for the model they are interested in and in what location they would like to book it.",
+    "openai/widgetPrefersBorder": false,
+    "openai/widgetCSP": {
+      "connect_domains": [
+        "https://main--eds-001--george-cgg.aem.page"
+      ],
+      "resource_domains": [
+        "https://main--eds-001--george-cgg.aem.page",
+        "https://www.bmwusa.com",
+        "https://images.unsplash.com",
+        "https://prod.cosy.bmw.cloud/"
+      ]
+    },
+    "openai/widgetDomain": "https://web-sandbox.oaiusercontent.com",
+    "openai:widget_meta": {
+      "script_url": "https://main--eds-001--george-cgg.aem.page/scripts/aem-embed.js",
+      "widget_embed_url": "https://main--eds-001--george-cgg.aem.page/eds-widgets/bmw-models"
+    }
+  }
+}
+

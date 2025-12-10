@@ -1,0 +1,29 @@
+{
+  "name": "helloWorldEDS",
+  "version": "0.0.1",
+  "isPublished": false,
+  "hasAemWidget": true,
+  "definition": {
+    "title": "Hello World EDS",
+    "description": "Returns a heartbeat timestamp in a nice visual widget with rounded corners and centered styling. Displays current server time in an interactive card format.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {},
+      "required": []
+    },
+    "annotations": {
+      "destructiveHint": false,
+      "openWorldHint": false,
+      "readOnlyHint": true
+    },
+    "_meta": {
+      "openai/outputTemplate": "ui://eds-widget/hello-world-eds-widget.html",
+      "openai/toolInvocation/invoking": "Saying hello world from EDS",
+      "openai/toolInvocation/invoked": "Said hello world from EDS",
+      "openai/widgetAccessible": true,
+      "openai/resultCanProduceWidget": true
+    }
+  }
+}
+
+

@@ -1,0 +1,112 @@
+{
+  "shirts": [
+    {
+      "id": "bezier-tee-white",
+      "name": "Bezier Tee - White",
+      "price": "$27.00",
+      "imageUrl": "https://picsum.photos/seed/bezier-white/400/400",
+      "description": "Classic white tee featuring the iconic Bezier curve design",
+      "color": "White",
+      "sizes": ["S", "M", "L", "XL", "XXL"]
+    },
+    {
+      "id": "womens-bezier-tee-white",
+      "name": "Women's Bezier Tee - White",
+      "price": "$25.00",
+      "imageUrl": "https://picsum.photos/seed/womens-bezier/400/400",
+      "description": "Women's fit white tee with elegant Bezier design",
+      "color": "White",
+      "sizes": ["XS", "S", "M", "L", "XL"]
+    },
+    {
+      "id": "adobe-for-all-tee",
+      "name": "Adobe for All Tee",
+      "price": "$16.00",
+      "imageUrl": "https://picsum.photos/seed/adobe-all/400/400",
+      "description": "Celebrate inclusivity with the Adobe for All design on premium cotton",
+      "color": "Black",
+      "sizes": ["S", "M", "L", "XL", "XXL"]
+    },
+    {
+      "id": "adobe-life-tee",
+      "name": "Adobe Life Tee",
+      "price": "$28.00",
+      "imageUrl": "https://picsum.photos/seed/adobe-life/400/400",
+      "description": "Showcase your Adobe pride with vibrant typography graphics",
+      "color": "Black",
+      "sizes": ["S", "M", "L", "XL", "XXL"]
+    },
+    {
+      "id": "creative-cloud-logo-tee",
+      "name": "Creative Cloud Logo Tee",
+      "price": "$29.00",
+      "imageUrl": "https://picsum.photos/seed/cc-logo/400/400",
+      "description": "Bold Creative Cloud logo on soft premium fabric",
+      "color": "Navy Blue",
+      "sizes": ["S", "M", "L", "XL", "XXL"]
+    },
+    {
+      "id": "photoshop-icon-tee",
+      "name": "Photoshop Icon Tee",
+      "price": "$26.00",
+      "imageUrl": "https://picsum.photos/seed/ps-icon/400/400",
+      "description": "Classic Photoshop Ps icon design for creative professionals",
+      "color": "Dark Blue",
+      "sizes": ["S", "M", "L", "XL"]
+    },
+    {
+      "id": "illustrator-pen-tool-tee",
+      "name": "Illustrator Pen Tool Tee",
+      "price": "$27.00",
+      "imageUrl": "https://picsum.photos/seed/ai-pen/400/400",
+      "description": "Featuring the iconic pen tool graphic that designers love",
+      "color": "Orange",
+      "sizes": ["S", "M", "L", "XL", "XXL"]
+    },
+    {
+      "id": "after-effects-ae-tee",
+      "name": "After Effects AE Tee",
+      "price": "$28.00",
+      "imageUrl": "https://picsum.photos/seed/ae-icon/400/400",
+      "description": "Motion graphics artists' favorite - After Effects logo tee",
+      "color": "Purple",
+      "sizes": ["M", "L", "XL", "XXL"]
+    },
+    {
+      "id": "premiere-pro-timeline-tee",
+      "name": "Premiere Pro Timeline Tee",
+      "price": "$30.00",
+      "imageUrl": "https://picsum.photos/seed/pr-timeline/400/400",
+      "description": "Edit in style with timeline-inspired graphic design",
+      "color": "Black",
+      "sizes": ["S", "M", "L", "XL", "XXL"]
+    },
+    {
+      "id": "adobe-max-2024-tee",
+      "name": "Adobe MAX 2024 Event Tee",
+      "price": "$35.00",
+      "imageUrl": "https://picsum.photos/seed/max-2024/400/400",
+      "description": "Limited edition Adobe MAX conference exclusive shirt",
+      "color": "Red",
+      "sizes": ["S", "M", "L", "XL"]
+    },
+    {
+      "id": "xd-gradient-tee",
+      "name": "Adobe XD Gradient Tee",
+      "price": "$27.00",
+      "imageUrl": "https://picsum.photos/seed/xd-gradient/400/400",
+      "description": "Modern gradient design representing Adobe XD's UI/UX focus",
+      "color": "Hot Pink",
+      "sizes": ["S", "M", "L", "XL", "XXL"]
+    },
+    {
+      "id": "creative-suite-all-apps-tee",
+      "name": "Creative Suite All Apps Tee",
+      "price": "$32.00",
+      "imageUrl": "https://picsum.photos/seed/all-apps/400/400",
+      "description": "Featuring all Creative Cloud app icons in a stunning grid layout",
+      "color": "Charcoal Gray",
+      "sizes": ["S", "M", "L", "XL", "XXL"]
+    }
+  ]
+}

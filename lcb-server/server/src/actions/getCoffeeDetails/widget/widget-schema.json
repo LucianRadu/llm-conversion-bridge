@@ -1,0 +1,27 @@
+{
+  "uri": "ui://eds-widget/frescopa-coffee-details.html",
+  "name": "getCoffeeDetailsWidget",
+  "description": "Displays detailed information about a Frescopa coffee product",
+  "mimeType": "text/html+skybridge",
+  "htmlFile": "template.html",
+  "_meta": {
+    "openai/widgetDescription": "After the widget is loaded and you have access to the data, display the coffee product details including name, description, price, and category.",
+    "openai/widgetPrefersBorder": false,
+    "openai/widgetCSP": {
+      "connect_domains": [
+        "https://main--eds-001--george-cgg.aem.page"
+      ],
+      "resource_domains": [
+        "https://main--eds-001--george-cgg.aem.page",
+        "https://delivery-p149891-e1546481.adobeaemcloud.com",
+        "https://delivery-p149891-e1546482.adobeaemcloud.com",
+        "https://frescopa.coffee"
+      ]
+    },
+    "openai/widgetDomain": "https://web-sandbox.oaiusercontent.com",
+    "openai:widget_meta": {
+      "script_url": "https://main--eds-001--george-cgg.aem.page/scripts/aem-embed.js",
+      "widget_embed_url": "https://main--eds-001--george-cgg.aem.page/eds-widgets/frescopa-coffee-details"
+    }
+  }
+}

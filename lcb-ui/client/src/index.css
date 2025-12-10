@@ -1,0 +1,252 @@
+/* Global styles for LCB UI */
+
+/* Remove default body/html padding and margin */
+html, body, #lcb-root {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+/* Add pointer cursor to all buttons and action buttons */
+button,
+[role="button"],
+.spectrum-Button,
+.spectrum-ActionButton {
+  cursor: pointer !important;
+}
+
+/* Also add pointer to switches */
+[role="switch"] {
+  cursor: pointer !important;
+}
+
+/* Add pointer cursor to list items */
+[role="option"],
+.spectrum-ListBoxItem,
+[role="row"],
+[role="gridcell"],
+.react-spectrum-ListView-row,
+.react-spectrum-ListViewItem {
+  cursor: pointer !important;
+}
+
+/* Toast slide-in animation */
+@keyframes slideIn {
+  from {
+    transform: translateX(400px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+/* Background flash animation for newly added actions */
+@keyframes backgroundFlash {
+  0% {
+    background-color: var(--spectrum-global-color-blue-400);
+  }
+  100% {
+    background-color: transparent;
+  }
+}
+
+/* Flow action box hover effect */
+.flow-action-box:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border-color: var(--spectrum-global-color-blue-400) !important;
+}
+
+/* Flow transition arrow container */
+.flow-arrow-container {
+  cursor: help;
+}
+
+/* Flow transition tooltip - show on arrow hover */
+.flow-arrow-container:hover .flow-transition-tooltip {
+  opacity: 1 !important;
+  pointer-events: auto !important;
+}
+
+/* Copy button icons - force white color */
+.copy-button-request svg,
+.copy-button-response svg,
+.copy-button-main-response svg,
+.copy-button-annotations svg,
+.copy-button-metadata svg,
+.copy-button-request svg path,
+.copy-button-response svg path,
+.copy-button-main-response svg path,
+.copy-button-annotations svg path,
+.copy-button-metadata svg path {
+  fill: #ffffff !important;
+  color: #ffffff !important;
+}
+
+/* Delete button icons - force red color */
+.delete-button svg,
+.delete-button svg path {
+  fill: #d32f2f !important;
+  color: #d32f2f !important;
+}
+
+/* Link button icons - force blue color */
+.link-button svg,
+.link-button svg path {
+  fill: #0265DC !important;
+  color: #0265DC !important;
+}
+
+/* Session ID tooltip trigger - override pointer cursor */
+.session-id-tooltip {
+  cursor: default !important;
+}
+
+/* Error banner - reusable error display style */
+.error-banner {
+  background-color: #FCE8E6;
+  border-color: #EA4335;
+}
+
+.error-banner-flex {
+  align-items: baseline !important;
+}
+
+.error-banner-text {
+  color: #5F6368;
+}
+
+/* Tree preview - force default cursor on all items */
+.tree-preview-container,
+.tree-preview,
+.tree-preview *,
+.tree-preview [role="treeitem"],
+.tree-preview [role="button"] {
+  cursor: default !important;
+}
+
+/* ListView item description text truncation */
+[class*="react-spectrum-ListViewItem-description"] {
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+  display: block !important;
+  padding-right: 29px !important;
+}
+
+/* Force flex parent to constrain width for ellipsis to work */
+[class*="react-spectrum-ListViewItem-grid"] > div,
+.vi3c6W_flex {
+  min-width: 0 !important;
+}
+
+/* Card animations and hover effects */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Smooth transitions for interactive elements */
+button, [role="button"] {
+  transition: all 0.2s ease;
+}
+
+/* Card grid animations */
+.actions-grid > div {
+  animation: fadeInUp 0.3s ease forwards;
+}
+
+/* Stagger animation for grid items */
+.actions-grid > div:nth-child(1) { animation-delay: 0s; }
+.actions-grid > div:nth-child(2) { animation-delay: 0.05s; }
+.actions-grid > div:nth-child(3) { animation-delay: 0.1s; }
+.actions-grid > div:nth-child(4) { animation-delay: 0.15s; }
+.actions-grid > div:nth-child(5) { animation-delay: 0.2s; }
+.actions-grid > div:nth-child(6) { animation-delay: 0.25s; }
+
+/* Slide-out panel animations already defined in component */
+
+/* Accessibility: Focus visible styles */
+*:focus-visible {
+  outline: 2px solid var(--spectrum-global-color-blue-600);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Smooth scrolling */
+* {
+  scroll-behavior: smooth;
+}
+
+/* Loading spinner animation */
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Pulse animation for loading states */
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+/* Badge animations */
+@keyframes badgePulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+/* Card elevation animation for server cards */
+@keyframes cardElevate {
+  from {
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  }
+  to {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+  }
+}
+
+/* Smooth transitions for server cards */
+.server-card-transition {
+  transition: all 0.2s ease;
+}
+
+/* Responsive breakpoints */
+@media (max-width: 768px) {
+  /* Mobile-friendly adjustments */
+  .actions-grid {
+    grid-template-columns: 1fr !important;
+  }
+}

@@ -1,0 +1,50 @@
+{
+  "name": "lcb-server",
+  "version": "0.0.1",
+  "description": "A TypeScript implementation of Fastly Compute@Edge MCP server",
+  "main": "dist/http-server.js",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "generate-actions": "node scripts/generate-actions-from-schemas.js",
+    "generate-eds-widgets": "node scripts/generate-eds-widgets-index.js",
+    "generate-all": "npm run generate-actions && npm run generate-eds-widgets",
+    "build": "tsc",
+    "build:fastly": "npm run generate-all && js-compute-runtime server/src/index.ts bin/main.wasm",
+    "kill-fastly": "pkill -f 'fastly compute serve' 2>/dev/null || true",
+    "serve": "npm run kill-fastly && sleep 1 && fastly compute serve --verbose",
+    "serve-only": "fastly compute serve --verbose",
+    "start": "node dist/http-server.js",
+    "dev": "npm run generate-all && npm run build && npm run start",
+    "test": "jest --forceExit",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage --forceExit",
+    "test:integration": "./it_local_fastly.sh"
+  },
+  "keywords": [
+    "mcp",
+    "fastly",
+    "edge-compute",
+    "typescript"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@adobe/aio-lib-ims": "^8.1.0",
+    "@fastly/js-compute": "^3.34.0",
+    "@modelcontextprotocol/sdk": "1.20.2",
+    "express": "^4.21.2",
+    "uuid": "^11.0.4",
+    "zod-to-json-schema": "^3.24.6"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.3",
+    "@types/jest": "^29.5.12",
+    "@types/node": "^22.15.33",
+    "@types/uuid": "^10.0.0",
+    "jest": "^29.7.0",
+    "ts-jest": "^29.1.2",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.7.3"
+  }
+}

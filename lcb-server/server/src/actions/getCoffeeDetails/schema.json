@@ -1,0 +1,33 @@
+{
+  "name": "getCoffeeDetails",
+  "version": "1.0.0",
+  "isPublished": false,
+  "hasAemWidget": true,
+  "definition": {
+    "title": "GetCoffeeDetails",
+    "description": "Get detailed information about a specific Frescopa coffee product by ID",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "coffeeId": {
+          "type": "string",
+          "description": "The ID of the coffee product (e.g., hbdr212, pod311)"
+        }
+      },
+      "required": ["coffeeId"]
+    },
+    "annotations": {
+      "destructiveHint": false,
+      "openWorldHint": false,
+      "readOnlyHint": true
+    },
+    "_meta": {
+      "openai/outputTemplate": "ui://eds-widget/frescopa-coffee-details.html",
+      "openai/widgetAccessible": true,
+      "openai/toolInvocation/invoking": "Loading coffee details...",
+      "openai/toolInvocation/invoked": "Coffee details ready",
+      "openai/resultCanProduceWidget": true
+    }
+  }
+}
+

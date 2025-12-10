@@ -1,0 +1,28 @@
+{
+  "uri": "ui://eds-widget/frescopa-coffee-list.html",
+  "name": "getCoffeeListWidget",
+  "description": "Gets Frescopa coffee products including Bagged Coffee and Coffee Pods.",
+  "mimeType": "text/html+skybridge",
+  "htmlFile": "template.html",
+  "_meta": {
+    "openai/widgetDescription": "After the widget is loaded and you have access to the data, create a table of the coffee products with the following columns: Name, Description, Price, Category, Roast Type.",
+    "openai/widgetPrefersBorder": false,
+    "openai/widgetCSP": {
+      "connect_domains": [
+        "https://main--eds-001--george-cgg.aem.page"
+      ],
+      "resource_domains": [
+        "https://main--eds-001--george-cgg.aem.page",
+        "https://frescopa.coffee",
+        "https://delivery-p149891-e1546481.adobeaemcloud.com",
+        "https://delivery-p149891-e1546482.adobeaemcloud.com"
+      ]
+    },
+    "openai/widgetDomain": "https://web-sandbox.oaiusercontent.com",
+    "openai:widget_meta": {
+      "script_url": "https://main--eds-001--george-cgg.aem.page/scripts/aem-embed.js",
+      "widget_embed_url": "https://main--eds-001--george-cgg.aem.page/eds-widgets/frescopa-coffee-list"
+    }
+  }
+}
+

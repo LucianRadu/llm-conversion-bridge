@@ -1,0 +1,43 @@
+{
+  "name": "lcb-ui-client",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --port 4545",
+    "build": "tsc && vite build",
+    "build:no-typecheck": "vite build",
+    "preview": "vite preview",
+    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0"
+  },
+  "dependencies": {
+    "@react-spectrum/s2": "^0.12.0",
+    "ansi-to-react": "^6.1.6",
+    "d3-drag": "^3.0.0",
+    "d3-selection": "^3.0.0",
+    "d3-transition": "^3.0.1",
+    "d3-zoom": "^3.0.0",
+    "diff": "^8.0.2",
+    "localforage": "^1.10.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-router-dom": "^6.28.0",
+    "unplugin-parcel-macros": "^0.1.1",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/d3-drag": "^3.0.7",
+    "@types/d3-selection": "^3.0.11",
+    "@types/d3-zoom": "^3.0.8",
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "@typescript-eslint/eslint-plugin": "^8.15.0",
+    "@typescript-eslint/parser": "^8.15.0",
+    "@vitejs/plugin-basic-ssl": "^2.1.0",
+    "@vitejs/plugin-react": "^4.3.4",
+    "eslint": "^9.15.0",
+    "lightningcss": "^1.30.2",
+    "typescript": "^5.7.2",
+    "vite": "^5.4.21"
+  }
+}

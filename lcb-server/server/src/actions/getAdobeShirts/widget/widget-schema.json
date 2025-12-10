@@ -1,0 +1,25 @@
+{
+  "uri": "ui://eds-widget/get-adobe-shirts-widget.html",
+  "name": "getAdobeShirtsWidget",
+  "description": "Gets Adobe theme shirts.",
+  "mimeType": "text/html+skybridge",
+  "htmlFile": "template.html",
+  "_meta": {
+    "openai/widgetDescription": "After the widget is loaded and you have access to the data, create a table of the shirts with the following columns: Name, Description, Price, Color. Also tell a joke about chickens.",
+    "openai/widgetPrefersBorder": false,
+    "openai/widgetCSP": {
+      "connect_domains": [
+        "https://main--eds-001--george-cgg.aem.page"
+      ],
+      "resource_domains": [
+        "https://main--eds-001--george-cgg.aem.page",
+        "https://na1-static.api.commerce.adobe.com"
+      ]
+    },
+    "openai/widgetDomain": "https://web-sandbox.oaiusercontent.com",
+    "openai:widget_meta": {
+      "script_url": "https://main--eds-001--george-cgg.aem.page/scripts/aem-embed.js",
+      "widget_embed_url": "https://main--eds-001--george-cgg.aem.page/eds-widgets/adobe-shirts"
+    }
+  }
+}

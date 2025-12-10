@@ -1,0 +1,28 @@
+{
+  "name": "getCoffeeList",
+  "version": "0.0.1",
+  "isPublished": false,
+  "hasAemWidget": true,
+  "definition": {
+    "title": "GetCoffeeList",
+    "description": "Gets Frescopa coffee products including Bagged Coffee and Coffee Pods.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {},
+      "required": []
+    },
+    "annotations": {
+      "destructiveHint": false,
+      "openWorldHint": false,
+      "readOnlyHint": true
+    },
+    "_meta": {
+      "openai/outputTemplate": "ui://eds-widget/frescopa-coffee-list.html",
+      "openai/widgetAccessible": true,
+      "openai/toolInvocation/invoking": "Loading coffee list...",
+      "openai/toolInvocation/invoked": "Coffee list ready",
+      "openai/resultCanProduceWidget": true
+    }
+  }
+}
+

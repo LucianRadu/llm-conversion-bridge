@@ -1,179 +1,273 @@
-# LLM Conversion Bridge
+# LCB - LLM Conversion Bridge
 
-Boilerplate project used to rapidly develop ChatGPT apps using AEM Edge Compute and Edge Delivery Services.
+**A boilerplate for rapidly building ChatGPT applications with custom actions and interactive widgets.**
 
-## Prerequisites
+## What is This?
 
-- **Node.js**: v20.19.3
-- **npm**: v10.8.2
-- **Fastly CLI**: v11.3.0
+LCB helps you create ChatGPT applications that can:
+- Execute custom **actions** (search products, book appointments, fetch data)
+- Display rich **widgets** (interactive cards, forms, product galleries)
+- Connect to your own data sources and APIs
 
-### Install Fastly CLI
+**Key Concepts:**
+- **MCP (Model Context Protocol)**: Standard protocol for AI assistants to interact with external tools
+- **Actions**: Functions that ChatGPT can call (e.g., "search catalog", "get weather")
+- **Widgets**: Visual components displayed in ChatGPT conversations (product cards, booking forms)
+- **lcb-server**: Your MCP server that handles ChatGPT requests
+- **lcb-ui**: Web interface for creating and managing actions
+
+**First-Time Setup:**
+
+1. **Create your environment file:**
+   ```bash
+   cp .env.example .env
+   ```
+
+2. **Edit `.env` and configure your service:**
+   ```bash
+   # Required - Your service identifier
+   AEM_COMPUTE_SERVICE=p<project>-e<env>-your-app-name
+   
+   # Example:
+   AEM_COMPUTE_SERVICE=p123456-e789012-my-chatgpt-app
+   ```
+
+3. **You're ready to start!**
+
+📝 **Note:** Throughout this documentation, you'll see variables like `${LCB_UI_FRONTEND_PORT}`. These are environment variables with defaults (4545, 3000, 7676) that you can customize in `.env` if needed.
+
+## Quick Start
+
+### Prerequisites
+- **Node.js**: v20.x or higher (tested with v20.19.3)
+- **npm**: v10.x or higher (tested with v10.8.2)
+- **Optional**: Fastly CLI v11.x+ (only needed for production deployment)
+
+### Easy Startup with run.sh
+
+**Fastest Way to Start Both Services:**
 ```bash
-brew install fastly/tap/fastly
+./run.sh
+# Automatically starts lcb-server and lcb-ui
+# Frontend: https://localhost:${LCB_UI_FRONTEND_PORT} (HTTPS with self-signed cert)
+# Backend: http://localhost:${LCB_UI_BACKEND_PORT}
+# MCP Server: http://localhost:${LCB_SERVER_PORT}/<service-name> (from .env)
 ```
 
-## Environment Variables
+The `run.sh` script:
+- Checks environment and prerequisites
+- Detects and kills existing processes
+- Starts lcb-server in background
+- Starts lcb-ui in foreground
+- Handles graceful shutdown with Ctrl+C
 
+### Manual Installation & Setup
+
+**Terminal 1: Start LCB Server**
 ```bash
-export AEM_COMPUTE_TOKEN=<your_token>
-export AEM_COMPUTE_SERVICE=<your_service_id>
-```
-
-**Note**: The AEM Compute API endpoint (`https://api-fastly.adobeaemcloud.com/`) is configured in the Makefile. To change it, edit the `API_ENDPOINT` variable in the Makefile.
-
-## Setup
-
-```bash
+cd lcb-server
 make setup
-```
-
-## Local Development
-
-For local development and testing:
-
-```bash
-# 1. Build the project
-make build
-
-# 2. Start local server
 make serve
+# MCP Server now at: http://localhost:${LCB_SERVER_PORT}/<service-name> (from .env)
 ```
 
-The server will be available at `http://127.0.0.1:7676/mcp-boilerplate`
-
-**Note**: The MCP endpoint path (`/mcp-boilerplate`) is defined by the `MCP_TRANSPORT_PATH` constant in `server/src/constants/mcp.ts`.
-
-## Development Commands
-
-### Make Commands (**Recommended**)
+**Terminal 2: Start LCB UI**
 ```bash
-make help                  # Show all available commands
-make setup                 # Install dependencies and setup development environment
-make build                 # Run tests and build Fastly Compute package (deployable .tar.gz)
-make build-ts              # Run tests and build TypeScript only (for development)
-make test                  # Run tests only
-make dev                   # Start development server
-make serve                 # Run locally with Fastly server (127.0.0.1:7676) with auto-cleanup
-make serve-only            # Run locally without killing existing processes
-make deploy                # Deploy to Fastly Compute service
-make tail-logs             # Tail logs from deployed service
-make clean                 # Clean build artifacts
-make check-env             # Check environment variables and tool versions
-make create-action         # Create new action scaffolding (NAME=myAction [WIDGET=true])
-make generate-actions      # Generate MCP actions index file
-make generate-aem-widgets  # Generate MCP AEM Widgets index file
-make generate-all          # Generate both MCP actions and MCP AEM Widgets index files
+cd lcb-ui
+npm install
+npm run dev
+# Frontend: https://localhost:${LCB_UI_FRONTEND_PORT} (HTTPS with self-signed cert)
+# Backend: http://localhost:${LCB_UI_BACKEND_PORT}
 ```
 
-## API Testing
+**Open Browser**
+- UI: https://localhost:${LCB_UI_FRONTEND_PORT}
+- MCP Server: http://localhost:${LCB_SERVER_PORT}/<service-name> (from .env)
 
-### Local (127.0.0.1:7676)
+## Project Structure
+
+```
+lcb/
+├── lcb-server/          # MCP Server (handles ChatGPT requests)
+│   ├── server/src/      # Your actions and widgets
+│   ├── Makefile         # Build and deployment commands
+│   └── README.md        # Server documentation
+│
+└── lcb-ui/              # Management Interface
+    ├── client/          # React UI (port ${LCB_UI_FRONTEND_PORT})
+    ├── server/          # API backend (port ${LCB_UI_BACKEND_PORT})
+    └── README.md        # UI documentation
+```
+
+## Documentation
+
+### For Quick Start & Setup
+- **[lcb-server/README.md](lcb-server/README.md)** - Server installation and commands
+- **[lcb-ui/README.md](lcb-ui/README.md)** - UI installation, features, and troubleshooting
+
+### For Deep Dives
+- **[CLAUDE.md](CLAUDE.md)** - Complete system overview and architecture
+- **[lcb-ui/CLAUDE.md](lcb-ui/CLAUDE.md)** - UI architecture, components, and patterns
+
+## What's Included
+
+### lcb-server (MCP Server)
+Your ChatGPT action server with:
+- **Action System**: Create custom functions ChatGPT can call
+- **Widget System**: Build interactive UI components
+- **Input Validation**: Automatic validation of user inputs
+- **Session Management**: Handles user sessions automatically
+- **Code Generation**: Scaffold new actions quickly
+- **Testing**: Built-in test framework
+- **Production Ready**: Deploy to production environments
+
+### lcb-ui (Management Interface)
+Visual tool for managing your actions:
+- **Action Wizard**: Step-by-step action creation with validation
+- **Edit & Deploy**: Modify actions and deploy changes instantly
+- **Widget Builder**: Create interactive UI components
+- **Visual Flow Builder**: Design conversation flows visually
+- **Deployment Automation**: One-click deployment with real-time output
+- **Change Tracking**: See what's changed before deploying
+- **Development Server**: Built-in local server for testing
+
+## Your First Action
+
+Let's create a simple "Hello World" action:
+
+**1. Start the development environment:**
 ```bash
-# Start the MCP Inspector to test the local server
+./run.sh
+# Opens browser at https://localhost:4545
+```
+
+**2. In the UI:**
+- Click **"Actions"** → **"Create Action"**
+- Name: `sayHello`
+- Description: "Greets a user by name"
+- Add parameter: `name` (string, required)
+- Click **"Create"**
+
+**3. Test it:**
+- Click **"Deploy"** → Select "Local Development" → **"Deploy"**
+- Use the MCP Inspector or ChatGPT to call your action
+
+**That's it!** You've created your first ChatGPT action.
+
+## Common Commands
+
+### Development
+```bash
+./run.sh                # Start everything (easiest)
+./check-env.sh          # Verify your setup
+
+# Or manually:
+cd lcb-server && make serve          # Start MCP server
+cd lcb-ui && npm run dev             # Start UI
+```
+
+### Creating Actions
+```bash
+cd lcb-server
+make create-action NAME=myAction     # Create new action
+make create-action NAME=myWidget WIDGET=true  # With widget
+```
+
+### Deployment
+```bash
+# Local deployment (via UI)
+# Just click "Deploy" in the UI!
+
+# Production deployment (advanced)
+cd lcb-server
+make deploy             # Deploy to production
+```
+
+## Testing Your Actions
+
+### Option 1: MCP Inspector (Recommended for Development)
+
+```bash
 npx @modelcontextprotocol/inspector
 ```
 
-This will open a web interface where you can:
-1. Enter the server URL: `http://127.0.0.1:7676/mcp-boilerplate`
-2. Test the `contentSearch` tool interactively
-3. View tool schemas and documentation
-4. Send requests and see responses in a user-friendly format
+Then connect to: `http://localhost:${LCB_SERVER_PORT}/<service-name>`
 
-### Remote (publish-pXXXXXX-eXXXXXX.adobeaemcloud.com)
-Replace `http://127.0.0.1:7676` with your AEM Cloud Service publish URL (e.g., `https://publish-p148639-e1512661.adobeaemcloud.com`) in above commands.
+### Option 2: ChatGPT (Production Testing)
 
-## Quick Start: Creating New Actions
+Once deployed, your actions will be available in ChatGPT conversations.
 
-Generate action scaffolding with a single command:
+## How It Works
 
-```bash
-# Create a basic action (no widget)
-make create-action NAME=myNewAction
+When you start the UI, it automatically sets up:
+- **Local development environment** for testing
+- **Database** to store your actions and configuration
+- **Deployment pipelines** for one-click deploys
 
-# Create an action with a widget
-make create-action NAME=myWidgetAction WIDGET=true
-```
+Everything is pre-configured and ready to use!
 
-This automatically creates:
-- Complete TypeScript action handler with type safety
-- Zod schema validation
-- Structured logging and error handling
-- Widget files (if `WIDGET=true`)
-- Updates action/widget indices
+## Key Features
 
-See **[scripts/README.md](scripts/README.md)** for detailed documentation and examples.
+- ✅ **5-Step Action Wizard**: Guided creation with validation
+- ✅ **Visual Widget Builder**: Create interactive UI without code
+- ✅ **Hot Reload**: See changes instantly during development
+- ✅ **Change Tracking**: Review all changes before deploying
+- ✅ **One-Click Deploy**: Deploy to production with a single click
+- ✅ **Rollback Support**: Undo deployments if needed
+- ✅ **Built-in Testing**: Test actions before deploying
+- ✅ **Type-Safe**: Full TypeScript support with auto-completion
 
-## Development Documentation
+## Technology Stack
 
-- **[Adding New Actions](server/src/actions/README.md)**: Step-by-step guide for creating new MCP actions
-- **[Adding New AEM Widgets](server/src/widgets/README.md)**: Step-by-step guide for creating new MCP AEM Widgets
-- **[Script Utilities](scripts/README.md)**: Documentation for code generation scripts
+- **Language**: TypeScript (full type safety)
+- **MCP SDK**: @modelcontextprotocol/sdk v1.20.2
+- **UI Framework**: React 18 + Vite
+- **UI Library**: Adobe React Spectrum
+- **Backend**: Hono (lightweight & fast)
+- **Testing**: Jest
+- **Deployment**: Production-ready infrastructure
 
-## Actions
+## Troubleshooting
 
-- **contentSearch**: Natural language content search with AEM integration. Returns JSON response.
-  - **query**: Required string. Natural language search query (e.g., "Find concerts in Berlin in June").
-  - **Features**: Uses IMS authentication for secure AEM API access.
-  - **Deployment**: Optimized for remote deployment with Fastly Secret Store integration.
-  - **Note**: To setup content AI follow the steps described [here](CONTENT_AI_ONBOARDING.md).
+### ❌ "AEM_COMPUTE_SERVICE not set"
+**Problem:** Missing or incorrect `.env` file  
+**Solution:** Copy `.env.example` to `.env` and edit the values
 
-- **heartbeat**: Simple health check tool that returns server timestamp and status.
-  - **Parameters**: None required.
-  - **Returns**: Server timestamp, uptime information, and health status in text format.
-  - **Use case**: Monitoring server availability and response times.
+### ❌ "Port already in use"
+**Problem:** Another process is using the port  
+**Solution:** Run `./run.sh` - it will detect and offer to stop existing processes
 
-- **heartbeatWidget**: Enhanced heartbeat tool that displays results in an interactive widget.
-  - **Parameters**: None required.
-  - **Returns**: Server timestamp and status information displayed in a visual widget with rounded corners.
-  - **Widget**: Shows real-time server heartbeat with styled interface including timestamp and status indicators.
-  - **Use case**: Visual monitoring and demonstration of widget functionality.
+### ❌ "Certificate error" in browser
+**Problem:** Self-signed HTTPS certificate  
+**Solution:** Click "Advanced" → "Proceed to localhost" (this is normal for local dev)
 
-## Content Search Examples
+### ❌ Action not appearing in ChatGPT
+**Problem:** Not deployed yet  
+**Solution:** Click "Deploy" in the UI and wait for deployment to complete
 
-Use the MCP Inspector (see [API Testing](#api-testing) section) to test these example queries with the `contentSearch` tool:
+### 💡 Still stuck?
 
-### Basic Natural Language Search
-- **Query**: `"Find concerts in Berlin in June"`
+1. Run `./check-env.sh` to verify your setup
+2. Check `lcb-server/README.md` for detailed documentation
+3. See `CLAUDE.md` for architecture details
 
-### Event-specific Search  
-- **Query**: `"theater events in London this summer"`
+## Next Steps
 
-### Location-based Search
-- **Query**: `"outdoor activities in Paris"`
+**Now that you're set up:**
 
-The MCP Inspector provides an interactive interface to test these queries and view the JSON responses.
+1. **Explore Example Actions**: Check `lcb-server/server/src/actions/` for examples
+2. **Read Action Guide**: See `lcb-server/server/src/actions/README.md`
+3. **Build Widgets**: See `lcb-server/server/src/widgets/README.md`
+4. **Deploy to Production**: When ready, see deployment documentation
 
-## Deployment Workflow
+**Example Projects You Can Build:**
+- 🛍️ E-commerce product search with cart widgets
+- 📅 Appointment booking with calendar display
+- 📊 Data visualization with interactive charts
+- 🔍 Content search with rich result cards
+- 📝 Form submission with confirmation widgets
 
-### Local
+## License
 
-```bash
-# 1. Build Fastly Compute package
-make build
+**Note:** This project requires an appropriate license before distribution. All source files contain Adobe confidential headers.
 
-# 2. Deploy to service  
-make deploy
-```
-
-
-## Content Search Tool
-
-The content search tool is designed for AEM Cloud Service integration:
-
-- Uses AEM hostname for API calls (configured via PUBLISH_BASE_URL constant)
-- Requires IMS authentication and Fastly Secret Store integration
-- Optimized for Fastly Compute@Edge deployment
-
-## Environment Check
-
-To verify your setup:
-```bash
-make check-env
-```
-
-This will show:
-- Fastly Service ID
-- API endpoints
-- Tool versions (Node.js, npm, Fastly CLI)
-- Authentication status

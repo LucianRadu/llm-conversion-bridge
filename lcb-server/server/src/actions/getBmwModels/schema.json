@@ -1,0 +1,34 @@
+{
+  "name": "getBmwModels",
+  "version": "0.0.1",
+  "isPublished": true,
+  "hasAemWidget": true,
+  "definition": {
+    "title": "GetBmwModels",
+    "description": "Gets BMW vehicle models with current lease offers and promotions.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "category": {
+          "type": "string",
+          "enum": ["all", "SUV", "Sedan", "Electric"],
+          "description": "Filter by vehicle category (default: all)"
+        }
+      },
+      "required": []
+    },
+    "annotations": {
+      "destructiveHint": false,
+      "openWorldHint": false,
+      "readOnlyHint": true
+    },
+    "_meta": {
+      "openai/outputTemplate": "ui://eds-widget/bmw-models-widget.html",
+      "openai/widgetAccessible": true,
+      "openai/toolInvocation/invoking": "Loading BMW models...",
+      "openai/toolInvocation/invoked": "BMW models ready",
+      "openai/resultCanProduceWidget": true
+    }
+  }
+}
+
