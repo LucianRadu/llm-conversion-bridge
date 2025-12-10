@@ -1,7 +1,7 @@
 {
   "name": "getCoffeeList",
   "version": "0.0.1",
-  "isPublished": false,
+  "isPublished": true,
   "hasAemWidget": true,
   "definition": {
     "title": "GetCoffeeList",

@@ -1,7 +1,7 @@
 {
   "name": "getCoffeeDetails",
   "version": "1.0.0",
-  "isPublished": false,
+  "isPublished": true,
   "hasAemWidget": true,
   "definition": {
     "title": "GetCoffeeDetails",
