@@ -416,7 +416,7 @@ export default function CreateActionWizard({
       if (connectedServer?.edsConfig) {
         const { branch, repo, owner } = connectedServer.edsConfig;
         const baseUrl = `https://${branch}--${repo}--${owner}.aem.page`;
-        setFormScriptUrl(`${baseUrl}/scripts/aem-embed.js`);
+        setFormScriptUrl('https://github.com/LucianRadu/chatgpt-eds/blob/main/scripts/aem-embed.js');
         setFormWidgetEmbedUrl(`${baseUrl}/eds-widgets/${name}`);
       }
     }
